@@ -1,5 +1,6 @@
 # 2 is left
 # 3 is right 
+# on a path
 
 class GameofCycles:
     
@@ -211,7 +212,7 @@ class GameofCycles:
         winner = False
         while not winner:
             for playerTurn in range(1, player_number + 1):
-                print("Player", str(playerTurn) + "'s turn\n")
+                print("\nPlayer", str(playerTurn) + "'s turn\n")
                 self.showGraph()
                 source = int(input("\nChoose a point to start from "))
                 destination = int(input("Choose a point to go to "))
@@ -224,11 +225,8 @@ class GameofCycles:
                     print("\nPlayer", playerTurn, "wins!")
                     winner = True
                     break
-
-#testing with a 7 path 
-#i also tested with a 3,4,5,and 6 paths to make sure 
-#checkUnmarkable and checkWin worked
-
+                    
+#testing the code with a board with 7 vertices
 test = GameofCycles(7)
 test.makePath()
 test.playGame(2)
