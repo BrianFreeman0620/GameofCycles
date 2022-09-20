@@ -107,6 +107,32 @@ class GameofCycles:
         else:
             print("This is an illegal move.")
             return False
+        
+    def checkUnmarkable(self, pointOne, pointTwo):
+        pointOneFlavor = 1
+        theOne = 1
+        theOne2 = 1
+        leafValueRow = 0
+        
+        for i in range(self.size):
+            if self.matrix[i][pointOne] == 1 and theOne == 1:
+                theOne = 0
+            elif self.matrix[i][pointOne] == 1 and theOne == 0:
+                return False
+            elif pointOneFlavor == 1 and not self.matrix[i][pointOne] == 0:
+                pointOneFlavor = self.matrix[i][pointOne]
+            elif not pointOneFlavor == self.matrix[i][pointOne] and not self.matrix[i][pointOne] == 0:
+                return False
+            
+        for j in range(self.size):
+            if self.matrix[pointTwo][j] == 1 and theOne2 == 1:
+                theOne2 = 0
+            elif self.matrix[pointTwo][j] == 1 and theOne2 == 0:
+                return False
+            elif self.matrix[pointTwo][j] == pointOneFlavor:
+                return False
+            
+        return True
   
 #testing the code with a board with 11 vertices
 #based on the graph I made up last Friday 
@@ -135,4 +161,33 @@ test.addEdge(10,6)
 
 test.showMatrix()
 
+print()
+
+test2 = GameofCycles(6)
+
+test2.addEdge(0,1)
+
+test2.addEdge(2,1)
+
+test2.addEdge(2,3)
+
+test2.addEdge(2,4)
+
+test2.addEdge(2,5)
+
+test2.showMatrix()
+
+print()
+
+test2.addDirection(2, 1)
+
+test2.addDirection(3, 2)
+
+test2.addDirection(2, 4)
+
+test2.addDirection(5, 2)
+
+test2.showMatrix()
+
+print(test2.checkUnmarkable(1, 0))
 
