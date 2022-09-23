@@ -3,7 +3,7 @@
 """
 Created on Fri Sep 16 09:55:18 2022
 
-@author: bushra
+@authors: bushra and brian
 """
 
 # 2 is out
@@ -29,11 +29,58 @@ class GameofCycles:
         for row in self.matrix:
             print(row)
     
+    # Checks if the graph is planar and states reason if it isn't
+    def isPlanar(self):
+        if self.size <= 4:
+            return True
+        else:
+            # Checks if the matrix can be reduced to K 3,3
+            if self.size > 5:
+                for vertex1 in range(self.size):
+                    for vertex2 in range(self.size):
+                        if not vertex1 == vertex2:
+                            for vertex3 in range(self.size):
+                                if not (vertex1 == vertex3 or vertex2 == vertex3):
+                                    for vertex4 in range(self.size):
+                                        if not (vertex1 == vertex4 or vertex2 == vertex4 or vertex3 == vertex4):
+                                            for vertex5 in range(self.size):
+                                                if not (vertex1 == vertex5 or vertex2 == vertex5 or vertex3 == vertex5 or vertex4 == vertex5):
+                                                    for vertex6 in range(self.size):
+                                                        if not (vertex1 == vertex6 or vertex2 == vertex6 or vertex3 == vertex6 or vertex4 == vertex6 or vertex5 == vertex6):
+                                                            if not self.matrix[vertex1][vertex2] == 0 and not self.matrix[vertex1][vertex3] == 0 and not self.matrix[vertex1][vertex4] == 0:
+                                                                if not self.matrix[vertex5][vertex2] == 0 and not self.matrix[vertex5][vertex3] == 0 and not self.matrix[vertex5][vertex4] == 0:
+                                                                   if not self.matrix[vertex6][vertex2] == 0 and not self.matrix[vertex6][vertex3] == 0 and not self.matrix[vertex6][vertex4] == 0:
+                                                                       print("K 3,3")
+                                                                       return False
+            # Checks if the matrix can be reduced to K 5
+            for vertex1 in range(self.size):
+                for vertex2 in range(self.size):
+                    if not vertex1 == vertex2:
+                        for vertex3 in range(self.size):
+                            if not (vertex1 == vertex3 or vertex2 == vertex3):
+                                for vertex4 in range(self.size):
+                                    if not (vertex1 == vertex4 or vertex2 == vertex4 or vertex3 == vertex4):
+                                        for vertex5 in range(self.size):
+                                            if not (vertex1 == vertex5 or vertex2 == vertex5 or vertex3 == vertex5 or vertex4 == vertex5):
+                                                if not self.matrix[vertex1][vertex2] == 0 and not self.matrix[vertex1][vertex3] == 0 and not self.matrix[vertex1][vertex4] == 0 and not self.matrix[vertex1][vertex5] == 0:
+                                                    if not self.matrix[vertex2][vertex3] == 0 and not self.matrix[vertex2][vertex4] == 0 and not self.matrix[vertex2][vertex5] == 0:
+                                                        if not self.matrix[vertex3][vertex4] == 0 and not self.matrix[vertex3][vertex5] == 0:
+                                                            if not self.matrix[vertex4][vertex5] == 0:
+                                                                print("K 5")
+                                                                return False
+                                                            
+            return True
+    
     # Adds edge to adjacency matrix starting at pointOne and going to pointTwo        
     def addEdge(self, pointOne, pointTwo):
-        self.matrix[pointOne][pointTwo] = 1
-        self.matrix[pointTwo][pointOne] = 1
-        self.edges += 1
+        if not pointOne == pointTwo and self.matrix[pointOne][pointTwo] == 0:
+            self.matrix[pointOne][pointTwo] = 1
+            self.matrix[pointTwo][pointOne] = 1
+            self.edges += 1
+        elif not self.matrix[pointOne][pointTwo] == 0:
+            print("That edge is already in the matrix")
+        else:
+            print("A vertix cannot point to itself")
     
     # Makes the current game a cycle
     def makeCycle(self):
@@ -111,33 +158,47 @@ class GameofCycles:
             return False
         
     def checkUnmarkable(self, pointOne, pointTwo):
-        pointOneFlavor = 1
-        theOne = 1
-        theOne2 = 1
-        #leafValueRow = 0
+        pointOneDirection = 1
+        rowOne = 1
+        columnOne = 1
+        leafValueRow = 0
+        leafValueColumn = 0
         
         if pointOne == pointTwo:
             print("This is an illegal move.")
         
         for i in range(self.size):
-            if self.matrix[i][pointOne] == 1 and theOne == 1:
-                theOne = 0
-            elif self.matrix[i][pointOne] == 1 and theOne == 0:
-                return False
-            elif pointOneFlavor == 1 and not self.matrix[i][pointOne] == 0:
-                pointOneFlavor = self.matrix[i][pointOne]
-            elif not pointOneFlavor == self.matrix[i][pointOne] and not self.matrix[i][pointOne] == 0:
-                return False
+            if not self.matrix[i][pointOne] == 0:
+                leafValueRow += 1
             
+            if self.matrix[i][pointOne] == 1 and rowOne == 1:
+                rowOne = 0
+            elif self.matrix[i][pointOne] == 1 and rowOne == 0:
+                return False
+            elif pointOneDirection == 1 and not self.matrix[i][pointOne] == 0:
+                pointOneDirection = self.matrix[i][pointOne]
+            elif not pointOneDirection == self.matrix[i][pointOne] and not self.matrix[i][pointOne] == 0:
+                return False
+        
+        if leafValueRow == 1:
+            return False
+        
         for j in range(self.size):
-            if self.matrix[pointTwo][j] == 1 and theOne2 == 1:
-                theOne2 = 0
-            elif self.matrix[pointTwo][j] == 1 and theOne2 == 0:
-                return False
-            elif self.matrix[pointTwo][j] == pointOneFlavor:
-                return False
+            if not self.matrix[pointTwo][j] == 0:
+                leafValueColumn += 1
             
-        return True
+            if self.matrix[pointTwo][j] == 1 and columnOne == 1:
+                columnOne = 0
+            elif self.matrix[pointTwo][j] == 1 and columnOne == 0:
+                return False
+            elif self.matrix[pointTwo][j] == pointOneDirection:
+                return False
+        
+            
+        if leafValueColumn == 1:
+            return False
+        else:
+            return True
     
     def checkWin(self):
         used = 0
@@ -198,7 +259,7 @@ test.showMatrix()
 
 #print(test.checkWin())
 
-print(test.checkUnmarkable(6,10))
+print(test.checkUnmarkable(10,6))
 
 """
 test2 = GameofCycles(6)
@@ -262,3 +323,34 @@ print(test3.checkWin())
 """
 
 
+test4 = GameofCycles(5)
+
+for i in range(5):
+    for j in range(5):
+        test4.addEdge(i, j)
+        
+print(test4.isPlanar())
+test4.showMatrix()
+
+test5 = GameofCycles(6)
+
+test5.addEdge(0, 3)
+
+test5.addEdge(0, 4)
+
+test5.addEdge(0, 5)
+
+test5.addEdge(1, 3)
+
+test5.addEdge(1, 4)
+
+test5.addEdge(1, 5)
+
+test5.addEdge(2, 3)
+
+test5.addEdge(2, 4)
+
+test5.addEdge(2, 5)
+
+print(test5.isPlanar())
+test5.showMatrix()
