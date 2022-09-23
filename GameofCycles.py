@@ -22,6 +22,7 @@ class GameofCycles:
                 self.matrix[pointOne].append(0)
         self.cycle = False
         self.path = False
+        self.edges = 0
     
     # Shows the adjacency matrix            
     def showMatrix(self):
@@ -32,6 +33,7 @@ class GameofCycles:
     def addEdge(self, pointOne, pointTwo):
         self.matrix[pointOne][pointTwo] = 1
         self.matrix[pointTwo][pointOne] = 1
+        self.edges += 1
     
     # Makes the current game a cycle
     def makeCycle(self):
@@ -112,7 +114,10 @@ class GameofCycles:
         pointOneFlavor = 1
         theOne = 1
         theOne2 = 1
-        leafValueRow = 0
+        #leafValueRow = 0
+        
+        if pointOne == pointTwo:
+            print("This is an illegal move.")
         
         for i in range(self.size):
             if self.matrix[i][pointOne] == 1 and theOne == 1:
@@ -133,9 +138,26 @@ class GameofCycles:
                 return False
             
         return True
-  
-#testing the code with a board with 11 vertices
-#based on the graph I made up last Friday 
+    
+    def checkWin(self):
+        used = 0
+        
+        for i in range(self.size):
+            for j in range(self.size):
+                if i > j:
+                    if self.matrix[i][j] == 0:
+                        pass
+                    elif self.matrix[i][j] == 1:
+                        if self.checkUnmarkable(i,j):
+                            used += 1
+                    else:
+                        used += 1
+        
+        if used == self.edges:
+            return True
+        else:
+            return False 
+            
 
 test = GameofCycles(11)
 
@@ -159,10 +181,26 @@ test.addEdge(9,6)
 
 test.addEdge(10,6)
 
-test.showMatrix()
-
 print()
 
+test.addDirection(7, 6)
+test.addDirection(8, 6)
+test.addDirection(9, 6)
+test.addDirection(4, 6)
+#test.addDirection(10, 6)
+test.addDirection(5, 4)
+test.addDirection(3, 4)
+test.addDirection(1, 3)
+test.addDirection(2, 1)
+test.addDirection(0, 1)
+
+test.showMatrix()
+
+#print(test.checkWin())
+
+print(test.checkUnmarkable(6,10))
+
+"""
 test2 = GameofCycles(6)
 
 test2.addEdge(0,1)
@@ -174,8 +212,6 @@ test2.addEdge(2,3)
 test2.addEdge(2,4)
 
 test2.addEdge(2,5)
-
-test2.showMatrix()
 
 print()
 
@@ -189,5 +225,40 @@ test2.addDirection(5, 2)
 
 test2.showMatrix()
 
-print(test2.checkUnmarkable(1, 0))
+print(test2.checkUnmarkable(0, 1))
+"""
+"""
+test3 = GameofCycles(6)
+
+test3.addEdge(0,1)
+
+test3.addEdge(0,2)
+
+test3.addEdge(1,2)
+
+test3.addEdge(2,3)
+
+test3.addEdge(3,4)
+
+test3.addEdge(3,5)
+
+test3.addEdge(4,5)
+
+print()
+
+test3.addDirection(0,2)
+
+test3.addDirection(1,2)
+
+test3.addDirection(4,3)
+
+test3.addDirection(5,3)
+
+print()
+
+test3.showMatrix()
+
+print(test3.checkWin())
+"""
+
 
