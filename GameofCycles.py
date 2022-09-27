@@ -76,6 +76,8 @@ class GameofCycles:
         if not pointOne == pointTwo and self.matrix[pointOne][pointTwo] == 0:
             self.matrix[pointOne][pointTwo] = 1
             self.matrix[pointTwo][pointOne] = 1
+            self.edges += 1
+            #remove when planar is back in town
             '''if self.isPlanar():
                 self.edges += 1
             else:
@@ -108,50 +110,63 @@ class GameofCycles:
             self.matrix[pointOne][pointTwo] = 2
             self.matrix[pointTwo][pointOne] = 3
             
-            sourceORsink = True
+            sourceORsinkOne = True
+            sourceORsinkTwo = True
             edgeStatus = 1
+            leafOne = 0
+            leafTwo = 0
             
             for i in range(self.size):
+                if not self.matrix[i][pointOne] == 0:
+                    leafOne += 1
+                
                 if self.matrix[i][pointOne] == 1:
-                    sourceORsink = False
+                    sourceORsinkOne = False
                     break
                 
                 if self.matrix[i][pointOne] == 2:
                     if edgeStatus == 1:
                         edgeStatus = 2
                     if edgeStatus == 3:
-                        sourceORsink = False
+                        sourceORsinkOne = False
                         break
                     
                 if self.matrix[i][pointOne] == 3:
                     if edgeStatus == 1:
                         edgeStatus = 3
                     if edgeStatus == 2:
-                        sourceORsink = False
+                        sourceORsinkOne = False
                         break
-                    
+            
+            if leafOne == 1:
+                sourceORsinkOne = False
             edgeStatus = 1
             
             for i in range(self.size):
+                if not self.matrix[i][pointTwo] == 0:
+                    leafTwo += 1
+                    
                 if self.matrix[i][pointTwo] == 1:
-                    sourceORsink = False
+                    sourceORsinkTwo = False
                     break
                 
                 if self.matrix[i][pointTwo] == 2:
                     if edgeStatus == 1:
                         edgeStatus = 2
                     if edgeStatus == 3:
-                        sourceORsink = False
+                        sourceORsinkTwo = False
                         break
                     
                 if self.matrix[i][pointTwo] == 3:
                     if edgeStatus == 1:
                         edgeStatus = 3
                     if edgeStatus == 2:
-                        sourceORsink = False
+                        sourceORsinkTwo = False
                         break
+            if leafTwo == 1:
+                sourceORsinkTwo = False
                 
-            if sourceORsink:
+            if sourceORsinkOne or sourceORsinkTwo:
                 print("That move creates a source or a sink.")
                 self.matrix[pointOne][pointTwo] = 1
                 self.matrix[pointTwo][pointOne] = 1
@@ -244,7 +259,7 @@ class GameofCycles:
                     break
                     
                     
-test3 = GameofCycles(6)
+'''test3 = GameofCycles(6)
 
 test3.addEdge(0,1)
 
@@ -262,9 +277,9 @@ test3.addEdge(4,5)
 
 print()
 
-test3.playGame(2)
+test3.playGame(2)'''
 
-"""
+
 
 test = GameofCycles(11)
 
@@ -290,7 +305,7 @@ test.addEdge(10,6)
 
 print()
 
-test.addDirection(7, 6)
+'''test.addDirection(7, 6)
 test.addDirection(8, 6)
 test.addDirection(9, 6)
 test.addDirection(4, 6)
@@ -299,14 +314,16 @@ test.addDirection(5, 4)
 test.addDirection(3, 4)
 test.addDirection(1, 3)
 test.addDirection(2, 1)
-test.addDirection(0, 1)
+test.addDirection(0, 1)'''
 
-test.showMatrix()
+test.playGame(2)
+
+#test.showMatrix()
 
 #print(test.checkWin())
 
-print(test.checkUnmarkable(10,6))
-"""
+#print(test.checkUnmarkable(10,6))
+
 
 """
 test2 = GameofCycles(6)
@@ -370,7 +387,7 @@ print(test3.checkWin())
 """
 
 
-test4 = GameofCycles(5)
+'''test4 = GameofCycles(5)
 
 for i in range(5):
     for j in range(5):
@@ -401,4 +418,4 @@ test5.addEdge(2, 4)
 test5.addEdge(2, 5)
 
 print(test5.isPlanar())
-test5.showMatrix()
+test5.showMatrix()'''
