@@ -223,6 +223,25 @@ class GameofCycles:
             return True
         else:
             return False 
+        
+        # Plays the game with given number of players
+    def playGame(self, player_number):
+        winner = False
+        while not winner:
+            for playerTurn in range(1, player_number + 1):
+                print("\nPlayer", str(playerTurn) + "'s turn\n")
+                self.showMatrix()
+                source = int(input("\nChoose a point to start from "))
+                destination = int(input("Choose a point to go to "))
+                while not self.addDirection(source, destination):
+                    self.showMatrix()
+                    source = int(input("\nChoose a point to start from "))
+                    destination = int(input("Choose a point to go to "))
+                if self.checkWin():
+                    self.showMatrix()
+                    print("\nPlayer", playerTurn, "wins!")
+                    winner = True
+                    break
             
 
 test = GameofCycles(11)
