@@ -76,7 +76,12 @@ class GameofCycles:
         if not pointOne == pointTwo and self.matrix[pointOne][pointTwo] == 0:
             self.matrix[pointOne][pointTwo] = 1
             self.matrix[pointTwo][pointOne] = 1
-            self.edges += 1
+            '''if self.isPlanar():
+                self.edges += 1
+            else:
+                self.matrix[pointOne][pointTwo] = 0
+                self.matrix[pointTwo][pointOne] = 0
+                print("That edge would make the graph nonplanar")'''
         elif not self.matrix[pointOne][pointTwo] == 0:
             print("That edge is already in the matrix")
         else:
@@ -327,7 +332,8 @@ test4 = GameofCycles(5)
 
 for i in range(5):
     for j in range(5):
-        test4.addEdge(i, j)
+        if i < j:
+            test4.addEdge(i, j)
         
 print(test4.isPlanar())
 test4.showMatrix()
