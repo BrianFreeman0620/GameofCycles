@@ -242,7 +242,29 @@ class GameofCycles:
                     print("\nPlayer", playerTurn, "wins!")
                     winner = True
                     break
-            
+                    
+                    
+test3 = GameofCycles(6)
+
+test3.addEdge(0,1)
+
+test3.addEdge(0,2)
+
+test3.addEdge(1,2)
+
+test3.addEdge(2,3)
+
+test3.addEdge(3,4)
+
+test3.addEdge(3,5)
+
+test3.addEdge(4,5)
+
+print()
+
+test3.playGame(2)
+
+"""
 
 test = GameofCycles(11)
 
@@ -284,6 +306,7 @@ test.showMatrix()
 #print(test.checkWin())
 
 print(test.checkUnmarkable(10,6))
+"""
 
 """
 test2 = GameofCycles(6)
