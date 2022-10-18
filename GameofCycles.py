@@ -6,6 +6,9 @@ Created on Fri Sep 16 09:55:18 2022
 @authors: bushra and brian
 """
 
+from itertools import combinations
+import copy
+
 # 2 is out
 # 3 is in 
 # on a path
@@ -105,7 +108,7 @@ class GameofCycles:
     
    
     # Tries to add a direction to the game and returns True if the move is legal
-    def addDirection(self, pointOne, pointTwo):
+    def addDirection(self, pointOne, pointTwo, printError = True):
         if self.matrix[pointOne][pointTwo] == 1:
             self.matrix[pointOne][pointTwo] = 2
             self.matrix[pointTwo][pointOne] = 3
@@ -167,14 +170,16 @@ class GameofCycles:
                 sourceORsinkTwo = False
                 
             if sourceORsinkOne or sourceORsinkTwo:
-                print("That move creates a source or a sink.")
+                if printError:
+                    print("That move creates a source or a sink.")
                 self.matrix[pointOne][pointTwo] = 1
                 self.matrix[pointTwo][pointOne] = 1
                 return False
             else:
                 return True
         else:
-            print("This is an illegal move.")
+            if printError:
+                print("This is an illegal move.")
             return False
         
     def checkUnmarkable(self, pointOne, pointTwo):
@@ -257,6 +262,92 @@ class GameofCycles:
                     print("\nPlayer", playerTurn, "wins!")
                     winner = True
                     break
+                
+    def simulateGame(self, player_number):
+        possibleMoves = []
+        for row in range(self.size):
+            for column in range(self.size):
+                if self.matrix[row][column] == 1 and row < column:
+                    possibleMoves.append([row, column])
+        
+        positionList = []
+        for number in range(len(possibleMoves)):
+            positionList.append(number)
+        
+        combList = []
+        for number in range(len(possibleMoves) + 1):
+            dummyList = list(combinations(positionList, number))
+            for element in dummyList:
+                combList.append(element)
+                
+        newPermList = []
+        for comb in combList:
+            dummyPerm = []
+            for moveNumber in range(len(possibleMoves)):
+                if moveNumber in comb:
+                    newElement = [possibleMoves[moveNumber][1], possibleMoves[moveNumber][0]]
+                else:
+                    newElement = [possibleMoves[moveNumber][0], possibleMoves[moveNumber][1]]
+                dummyPerm.append(newElement)
+            newPermList.append(dummyPerm)
+        
+        permDict = {}
+        winningSet = []
+        winningMatrices = []
+        game = 0
+        
+        for player in range(player_number):
+            permDict[player] = 0
+        
+        for perm in newPermList:
+            alreadyPlayed = False
+            for gamesPlayed in winningSet:
+                alreadyPlayed = True
+                for movePlayed in range(len(gamesPlayed)):
+                    if not gamesPlayed[movePlayed] == perm[movePlayed]:
+                        alreadyPlayed = False
+                        break
+                if alreadyPlayed:
+                    break
+            
+            if not alreadyPlayed:
+                currentPlayer = 0
+                movesMade = []
+                for move in perm:
+                    if self.addDirection(move[0], move[1], False):
+                        currentPlayer += 1
+                    else:
+                        if self.checkWin():
+                            winningSet.append(movesMade)
+                            break
+                        elif self.checkUnmarkable(move[0], move[1]):
+                            break
+                    movesMade.append(move)
+                if self.checkWin():
+                    if self.matrix in winningMatrices:
+                        game -= 1
+                        permDict[currentPlayer%player_number] -= 1
+                    else:
+                        winningMatrices.append(copy.deepcopy(self.matrix))
+                    permDict[currentPlayer%player_number] += 1
+                    game += 1
+                for row in range(self.size):
+                    for column in range(self.size):
+                        if self.matrix[row][column] > 1:
+                            self.matrix[row][column] = 1
+       
+        print("")
+        for matrix in winningMatrices:
+            for row in matrix:
+                print(row)
+            print("")
+        print("Games played: " + str(game))
+        for player in permDict:
+            if player == 0:
+                print("Player " + str(player_number) + " won " + str(round(permDict[player]/game * 100, 2)) + "% of games")
+            else:
+                print("Player " + str(player) + " won " + str(round(permDict[player]/game * 100, 2)) + "% of games")
+                
                     
                     
 '''test3 = GameofCycles(6)
@@ -281,7 +372,7 @@ test3.playGame(2)'''
 
 
 
-test = GameofCycles(11)
+'''test = GameofCycles(11)
 
 test.addEdge(1,0)
 
@@ -305,6 +396,8 @@ test.addEdge(10,6)
 
 print()
 
+'''
+
 '''test.addDirection(7, 6)
 test.addDirection(8, 6)
 test.addDirection(9, 6)
@@ -316,7 +409,7 @@ test.addDirection(1, 3)
 test.addDirection(2, 1)
 test.addDirection(0, 1)'''
 
-test.playGame(2)
+#test.playGame(2)
 
 #test.showMatrix()
 
@@ -419,3 +512,33 @@ test5.addEdge(2, 5)
 
 print(test5.isPlanar())
 test5.showMatrix()'''
+
+test6 = GameofCycles(7)
+
+test6.addEdge(0, 1)
+
+test6.addEdge(1, 2)
+
+test6.addEdge(2, 3)
+
+test6.addEdge(3, 4)
+
+test6.addEdge(4, 5)
+
+test6.addEdge(4, 6)
+
+test6.showMatrix()
+
+test6.simulateGame(2)
+
+'''
+test7 = GameofCycles(6)
+
+test7.makePath()
+
+test7.showMatrix()
+
+test7.simulateGame(2)
+
+#test7.simulateGame(3)
+'''
