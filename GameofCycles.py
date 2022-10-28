@@ -294,6 +294,7 @@ class GameofCycles:
         permDict = {}
         winningSet = []
         winningMatrices = []
+        correspondingWinner = []
         game = 0
         
         for player in range(player_number):
@@ -329,6 +330,10 @@ class GameofCycles:
                         permDict[currentPlayer%player_number] -= 1
                     else:
                         winningMatrices.append(copy.deepcopy(self.matrix))
+                        if currentPlayer%player_number == 0:
+                            correspondingWinner.append(player_number)
+                        else:
+                            correspondingWinner.append(currentPlayer%player_number)
                     permDict[currentPlayer%player_number] += 1
                     game += 1
                 for row in range(self.size):
@@ -337,8 +342,9 @@ class GameofCycles:
                             self.matrix[row][column] = 1
        
         print("")
-        for matrix in winningMatrices:
-            for row in matrix:
+        for matrix in range(len(winningMatrices)):
+            print("Game " + str(matrix + 1) + ": Player " + str(correspondingWinner[matrix]) + " win")
+            for row in winningMatrices[matrix]:
                 print(row)
             print("")
         print("Games played: " + str(game))
@@ -513,7 +519,7 @@ test5.addEdge(2, 5)
 print(test5.isPlanar())
 test5.showMatrix()'''
 
-test6 = GameofCycles(7)
+test6 = GameofCycles(8)
 
 test6.addEdge(0, 1)
 
@@ -523,9 +529,11 @@ test6.addEdge(2, 3)
 
 test6.addEdge(3, 4)
 
-test6.addEdge(4, 5)
+test6.addEdge(1, 5)
 
-test6.addEdge(4, 6)
+test6.addEdge(2, 6)
+
+test6.addEdge(3, 7)
 
 test6.showMatrix()
 
