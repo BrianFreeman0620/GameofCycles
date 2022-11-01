@@ -7,6 +7,7 @@ Created on Fri Sep 16 09:55:18 2022
 """
 
 from itertools import combinations
+import random
 import copy
 
 # 2 is out
@@ -279,8 +280,8 @@ class GameofCycles:
             dummyList = list(combinations(positionList, number))
             for element in dummyList:
                 combList.append(element)
-                
-        newPermList = []
+        
+        permList = []
         for comb in combList:
             dummyPerm = []
             for moveNumber in range(len(possibleMoves)):
@@ -289,7 +290,25 @@ class GameofCycles:
                 else:
                     newElement = [possibleMoves[moveNumber][0], possibleMoves[moveNumber][1]]
                 dummyPerm.append(newElement)
-            newPermList.append(dummyPerm)
+            permList.append(dummyPerm)
+        
+        newPermList = []
+        for perm in permList:
+            randomPositions = []
+            for position in range(len(perm)):
+                randomPositions.append([])
+                for position2 in range(len(perm)):
+                    randomPositions[position].append(position2)
+                random.shuffle(randomPositions[position])
+            
+            newPerms = []
+            
+            for permutation in range(len(perm)):
+                newPerms.append([])
+                for move in range(len(perm)):
+                    newPerms[permutation].append(perm[randomPositions[permutation][move]])
+                
+                newPermList.append(newPerms[permutation])
         
         permDict = {}
         winningSet = []
@@ -340,7 +359,7 @@ class GameofCycles:
                     for column in range(self.size):
                         if self.matrix[row][column] > 1:
                             self.matrix[row][column] = 1
-       
+
         print("")
         for matrix in range(len(winningMatrices)):
             print("Game " + str(matrix + 1) + ": Player " + str(correspondingWinner[matrix]) + " win")
@@ -533,7 +552,7 @@ test6.addEdge(1, 5)
 
 test6.addEdge(2, 6)
 
-test6.addEdge(3, 7)
+test6.addEdge(2, 7)
 
 test6.showMatrix()
 
