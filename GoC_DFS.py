@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+Created on Fri Nov  4 09:48:42 2022
+
+@author: bushra
+"""
+
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
 Created on Tue Oct 18 09:58:39 2022
 
 @author: bushra
@@ -14,25 +22,18 @@ Adapted from Geeks for Geeks DFS code + Game of Cycles code
 
 from GameOfCycles_2 import *
 
-test = GameofCycles(8)
+"""
+to Brian: put whatever graph you're testing here formatted like this ->
+'
+test = GameofCycles(4)
 
-test.addEdge(4,1)
-
-test.addEdge(2,6)
-
-test.addEdge(0,7)
-
-test.addEdge(5,3)
-
-test.addEdge(0,5)
-
-test.addEdge(6,1)
-
-test.addEdge(7,2)
-
-test.addEdge(6,4)
-
-test.addEdge(3,7)
+test.addEdge(0,1)
+test.addEdge(0,2)
+test.addEdge(0,3)
+test.addEdge(1,3)
+test.addEdge(1,2)
+test.addEdge(2,3)
+"""
 
 n = 100 #setting a max number of cycles and reusing it for markers and parents
 cycles = [[] for i in range(n)]
@@ -109,30 +110,6 @@ cycleNumber = 0
 GOC_DFS(test, 0, 1, marker, parent)
 print_GOC_Cycles()
 
-
-"""
-# 4 - graph with 6 vertices and 4 cycles (DFS can't handle this one)
-
-test = GameofCycles(6)
-
-test.addEdge(0,1)
-
-test.addEdge(0,2)
-
-test.addEdge(1,2)
-
-test.addEdge(1,3)
-
-test.addEdge(1,4)
-
-test.addEdge(2,3)
-
-test.addEdge(2,5)
-
-test.addEdge(3,4)
-
-test.addEdge(3,5)
-"""
 
 
 
