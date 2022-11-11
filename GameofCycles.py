@@ -27,6 +27,7 @@ class GameofCycles:
         self.cycle = False
         self.path = False
         self.edges = 0
+        self.edgeList = []
     
     # Shows the adjacency matrix            
     def showMatrix(self):
@@ -80,7 +81,7 @@ class GameofCycles:
         if not pointOne == pointTwo and self.matrix[pointOne][pointTwo] == 0:
             self.matrix[pointOne][pointTwo] = 1
             self.matrix[pointTwo][pointOne] = 1
-            self.edges += 1
+            self.edgeList.append([pointOne, pointTwo])
             #remove when planar is back in town
             '''if self.isPlanar():
                 self.edges += 1
@@ -240,7 +241,7 @@ class GameofCycles:
                     else:
                         used += 1
         
-        if used == self.edges:
+        if used == len(self.edgeList):
             return True
         else:
             return False 
