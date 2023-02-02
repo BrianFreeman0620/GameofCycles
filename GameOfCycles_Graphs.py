@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Nov 15 10:40:05 2022
-
 @author: bushra and brian
 """
 
@@ -250,6 +249,18 @@ class GameofCycles:
         if used == len(self.edgeList):
             return True
         else:
+            for cycle in self.cellList:
+                completeCycle = True
+                currentDirection = 4
+                for vertex in range(len(cycle)):
+                    if vertex == 0:
+                        if self.matrix[cycle[vertex]] [cycle[vertex-1]] in [2,3]:
+                            currentDirection = self.matrix[cycle[vertex]][cycle[vertex-1]]
+                    else:
+                        if not currentDirection == self.matrix[cycle[vertex]] [cycle[vertex-1]]:
+                            completeCycle = False
+                if completeCycle:
+                    return True
             return False 
         
         # Plays the game with given number of players
@@ -374,7 +385,9 @@ test.addEdge(1,6)
 test.addEdge(3,0)
 test.addEdge(6,2)
 
-test.addCycle([[0,4,5],[1,3,0,4],[1,6,2,3]])
+test.addCycle([0,4,5])
+test.addCycle([1,3,0,4])
+test.addCycle([1,6,2,3])
 print(test.cellList)
 
 test.addDirection(1,6)
@@ -382,4 +395,4 @@ test.addDirection(6,2)
 test.addDirection(3,1)
 test.addDirection(2,3)
 test.showMatrix()
-
+print(test.checkWin())
