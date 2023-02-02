@@ -6,6 +6,7 @@ Created on Tue Nov 15 10:40:05 2022
 """
 
 from itertools import combinations
+import random
 import copy
 
 # 2 is out
@@ -31,6 +32,13 @@ class GameofCycles:
     def showMatrix(self):
         for row in self.matrix:
             print(row)
+            
+    # Returns the adjaceny matrix
+    def returnMatrix(self):
+        matrixString = ""
+        for row in self.matrix:
+            matrixString += str(row) + "\n"
+        return matrixString
     
     # Checks if the graph is planar and states reason if it isn't
     def isPlanar(self):
@@ -282,7 +290,7 @@ class GameofCycles:
                     winner = True
                     break
                 
-    def simulateGame(self, player_number):
+    def simulateGame(self, player_number, hasCycles = False):
         possibleMoves = []
         for row in range(self.size):
             for column in range(self.size):
@@ -298,8 +306,8 @@ class GameofCycles:
             dummyList = list(combinations(positionList, number))
             for element in dummyList:
                 combList.append(element)
-                
-        newPermList = []
+        
+        permList = []
         for comb in combList:
             dummyPerm = []
             for moveNumber in range(len(possibleMoves)):
@@ -308,7 +316,45 @@ class GameofCycles:
                 else:
                     newElement = [possibleMoves[moveNumber][0], possibleMoves[moveNumber][1]]
                 dummyPerm.append(newElement)
-            newPermList.append(dummyPerm)
+            permList.append(dummyPerm)
+        
+        newPermList = []
+        for perm in permList:
+            randomPositions = []
+            if not hasCycles:
+                for position in range(len(perm)):
+                    randomPositions.append([])
+                    for position2 in range(len(perm)):
+                        randomPositions[position].append(position2)
+                    random.shuffle(randomPositions[position])
+                
+                newPerms = []
+                
+                for permutation in range(len(perm)):
+                    newPerms.append([])
+                    for move in range(len(perm)):
+                        newPerms[permutation].append(perm[randomPositions[permutation][move]])
+                    
+                    newPermList.append(newPerms[permutation])
+            else:
+                for squarePosition in range(len(perm)):
+                    for position in range(len(perm)):
+                        randomPositions.append([])
+                        for position2 in range(len(perm)):
+                            randomPositions[(len(perm) * squarePosition) + position].append(position2)
+                        random.shuffle(randomPositions[(len(perm) * squarePosition) + position])
+            
+                newPerms = []
+                
+                for squarePosition in range(len(perm)):
+                    for permutation in range(len(perm)):
+                        newPerms.append([])
+                        for move in range(len(perm)):
+                            newPerms[permutation].append(perm[randomPositions[(len(perm) * squarePosition) + position][move]])
+                        
+                        newPermList.append(newPerms[permutation])
+        
+        print(len(newPermList))
         
         permDict = {}
         winningSet = []
@@ -321,27 +367,34 @@ class GameofCycles:
         
         for perm in newPermList:
             alreadyPlayed = False
-            for gamesPlayed in winningSet:
-                alreadyPlayed = True
-                for movePlayed in range(len(gamesPlayed)):
-                    if not gamesPlayed[movePlayed] == perm[movePlayed]:
-                        alreadyPlayed = False
+            if not hasCycles:
+                for gamesPlayed in winningSet:
+                    alreadyPlayed = True
+                    for movePlayed in range(len(gamesPlayed)):
+                        if not gamesPlayed[movePlayed] == perm[movePlayed]:
+                            alreadyPlayed = False
+                            break
+                    if alreadyPlayed:
                         break
-                if alreadyPlayed:
-                    break
             
             if not alreadyPlayed:
                 currentPlayer = 0
                 movesMade = []
+                if hasCycles:
+                    random.shuffle(perm)
                 for move in perm:
-                    if self.addDirection(move[0], move[1], False):
+                    if self.checkWin():
+                        winningSet.append(movesMade)
+                        break 
+                    elif self.addDirection(move[0], move[1], False):
                         currentPlayer += 1
                     else:
                         if self.checkWin():
                             winningSet.append(movesMade)
                             break
                         elif self.checkUnmarkable(move[0], move[1]):
-                            break
+                            if not hasCycles:
+                                break
                     movesMade.append(move)
                 if self.checkWin():
                     if self.matrix in winningMatrices:
@@ -359,19 +412,25 @@ class GameofCycles:
                     for column in range(self.size):
                         if self.matrix[row][column] > 1:
                             self.matrix[row][column] = 1
-       
-        print("")
+
+        if not hasCycles:
+            outfile = open("Current_Trees.txt", "w")
+        else:
+            outfile = open("Current_Cycles.txt", "w")
+        outfile.write(self.returnMatrix())
         for matrix in range(len(winningMatrices)):
-            print("Game " + str(matrix + 1) + ": Player " + str(correspondingWinner[matrix]) + " win")
+            outfile.write("Game " + str(matrix + 1) + ": Player " + str(correspondingWinner[matrix]) + " win\n")
             for row in winningMatrices[matrix]:
-                print(row)
-            print("")
-        print("Games played: " + str(game))
+                outfile.write(str(row) + "\n")
+            outfile.write("\n")
+        outfile.write("Games played: " + str(game) + "\n")
         for player in permDict:
             if player == 0:
-                print("Player " + str(player_number) + " won " + str(round(permDict[player]/game * 100, 2)) + "% of games")
+                outfile.write("Player " + str(player_number) + " won " + str(round(permDict[player]/game * 100, 2)) + "% of games\n")
             else:
-                print("Player " + str(player) + " won " + str(round(permDict[player]/game * 100, 2)) + "% of games")
+                outfile.write("Player " + str(player) + " won " + str(round(permDict[player]/game * 100, 2)) + "% of games\n")
+                
+        outfile.close()
                 
                     
 test = GameofCycles(7)
@@ -388,11 +447,11 @@ test.addEdge(6,2)
 test.addCycle([0,4,5])
 test.addCycle([1,3,0,4])
 test.addCycle([1,6,2,3])
-print(test.cellList)
 
 test.addDirection(1,6)
 test.addDirection(6,2)
 test.addDirection(3,1)
 test.addDirection(2,3)
 test.showMatrix()
-print(test.checkWin())
+
+test.simulateGame(2, True)
