@@ -321,38 +321,20 @@ class GameofCycles:
         newPermList = []
         for perm in permList:
             randomPositions = []
-            if not hasCycles:
-                for position in range(len(perm)):
-                    randomPositions.append([])
-                    for position2 in range(len(perm)):
-                        randomPositions[position].append(position2)
-                    random.shuffle(randomPositions[position])
-                
-                newPerms = []
-                
-                for permutation in range(len(perm)):
-                    newPerms.append([])
-                    for move in range(len(perm)):
-                        newPerms[permutation].append(perm[randomPositions[permutation][move]])
-                    
-                    newPermList.append(newPerms[permutation])
-            else:
-                for squarePosition in range(len(perm)):
-                    for position in range(len(perm)):
-                        randomPositions.append([])
-                        for position2 in range(len(perm)):
-                            randomPositions[(len(perm) * squarePosition) + position].append(position2)
-                        random.shuffle(randomPositions[(len(perm) * squarePosition) + position])
+            for position in range(len(perm)):
+                randomPositions.append([])
+                for position2 in range(len(perm)):
+                    randomPositions[position].append(position2)
+                random.shuffle(randomPositions[position])
             
-                newPerms = []
+            newPerms = []
+            
+            for permutation in range(len(perm)):
+                newPerms.append([])
+                for move in range(len(perm)):
+                    newPerms[permutation].append(perm[randomPositions[permutation][move]])
                 
-                for squarePosition in range(len(perm)):
-                    for permutation in range(len(perm)):
-                        newPerms.append([])
-                        for move in range(len(perm)):
-                            newPerms[permutation].append(perm[randomPositions[(len(perm) * squarePosition) + position][move]])
-                        
-                        newPermList.append(newPerms[permutation])
+                newPermList.append(newPerms[permutation])
         
         print(len(newPermList))
         
@@ -367,15 +349,14 @@ class GameofCycles:
         
         for perm in newPermList:
             alreadyPlayed = False
-            if not hasCycles:
-                for gamesPlayed in winningSet:
-                    alreadyPlayed = True
-                    for movePlayed in range(len(gamesPlayed)):
-                        if not gamesPlayed[movePlayed] == perm[movePlayed]:
-                            alreadyPlayed = False
-                            break
-                    if alreadyPlayed:
+            for gamesPlayed in winningSet:
+                alreadyPlayed = True
+                for movePlayed in range(len(gamesPlayed)):
+                    if not gamesPlayed[movePlayed] == perm[movePlayed]:
+                        alreadyPlayed = False
                         break
+                if alreadyPlayed:
+                    break
             
             if not alreadyPlayed:
                 currentPlayer = 0
@@ -393,8 +374,7 @@ class GameofCycles:
                             winningSet.append(movesMade)
                             break
                         elif self.checkUnmarkable(move[0], move[1]):
-                            if not hasCycles:
-                                break
+                            break
                     movesMade.append(move)
                 if self.checkWin():
                     if self.matrix in winningMatrices:
@@ -448,10 +428,6 @@ test.addCycle([0,4,5])
 test.addCycle([1,3,0,4])
 test.addCycle([1,6,2,3])
 
-test.addDirection(1,6)
-test.addDirection(6,2)
-test.addDirection(3,1)
-test.addDirection(2,3)
 test.showMatrix()
 
 test.simulateGame(2, True)
