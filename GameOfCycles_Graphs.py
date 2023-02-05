@@ -336,8 +336,6 @@ class GameofCycles:
                 
                 newPermList.append(newPerms[permutation])
         
-        print(len(newPermList))
-        
         permDict = {}
         winningSet = []
         winningMatrices = []
@@ -346,6 +344,11 @@ class GameofCycles:
         
         for player in range(player_number):
             permDict[player] = 0
+        
+        firstMovesPlayer1 = {}
+        firstMovesPlayer2 = {}
+        firstTwoMovesPlayer1 = {}
+        firstTwoMovesPlayer2 = {}
         
         for perm in newPermList:
             alreadyPlayed = False
@@ -361,20 +364,12 @@ class GameofCycles:
             if not alreadyPlayed:
                 currentPlayer = 0
                 movesMade = []
-                if hasCycles:
-                    random.shuffle(perm)
                 for move in perm:
                     if self.checkWin():
                         winningSet.append(movesMade)
                         break 
                     elif self.addDirection(move[0], move[1], False):
                         currentPlayer += 1
-                    else:
-                        if self.checkWin():
-                            winningSet.append(movesMade)
-                            break
-                        elif self.checkUnmarkable(move[0], move[1]):
-                            break
                     movesMade.append(move)
                 if self.checkWin():
                     if self.matrix in winningMatrices:
@@ -384,15 +379,98 @@ class GameofCycles:
                         winningMatrices.append(copy.deepcopy(self.matrix))
                         if currentPlayer%player_number == 0:
                             correspondingWinner.append(player_number)
+                            if str([movesMade[0][1], movesMade[0][0]]) in firstMovesPlayer2:
+                                if str([movesMade[0][1], movesMade[0][0]]) not in firstMovesPlayer1:
+                                    firstMovesPlayer1[str([movesMade[0][1], movesMade[0][0]])] = 1
+                                else:
+                                    firstMovesPlayer1[str([movesMade[0][1], movesMade[0][0]])] += 1
+                            elif str(movesMade[0]) in firstMovesPlayer2:
+                                if str(movesMade[0]) in firstMovesPlayer1:
+                                    firstMovesPlayer1[str(movesMade[0])] += 1
+                                else:
+                                    firstMovesPlayer1[str(movesMade[0])] = 1
+                            else:
+                                if str(movesMade[0]) in firstMovesPlayer1:
+                                    firstMovesPlayer1[str(movesMade[0])] += 1
+                                elif str([movesMade[0][1], movesMade[0][0]]) in firstMovesPlayer1:
+                                    firstMovesPlayer1[str([movesMade[0][1], movesMade[0][0]])] += 1
+                                else:
+                                    firstMovesPlayer1[str(movesMade[0])] = 1
+                                
+                            if str(movesMade[:2]) not in firstTwoMovesPlayer1:
+                                firstTwoMovesPlayer1[str(movesMade[:2])] = 1 
+                            else:
+                                newTwoMoves = [[movesMade[0][1], movesMade[0][0]], [movesMade[1][1], movesMade[1][0]]]
+                                if str(newTwoMoves) not in firstTwoMovesPlayer1:
+                                    firstTwoMovesPlayer1[str(movesMade[:2])] += 1
+                                else:
+                                    firstTwoMovesPlayer1[str(newTwoMoves)] += 1
                         else:
                             correspondingWinner.append(currentPlayer%player_number)
+                            if str([movesMade[0][1], movesMade[0][0]]) in firstMovesPlayer1:
+                                if str([movesMade[0][1], movesMade[0][0]]) not in firstMovesPlayer2:
+                                    firstMovesPlayer2[str([movesMade[0][1], movesMade[0][0]])] = 1
+                                else:
+                                    firstMovesPlayer2[str([movesMade[0][1], movesMade[0][0]])] += 1
+                            elif str(movesMade[0]) in firstMovesPlayer1:
+                                if str(movesMade[0]) in firstMovesPlayer2:
+                                    firstMovesPlayer2[str(movesMade[0])] += 1
+                                else:
+                                    firstMovesPlayer2[str(movesMade[0])] = 1
+                            else:
+                                if str(movesMade[0]) in firstMovesPlayer2:
+                                    firstMovesPlayer2[str(movesMade[0])] += 1
+                                elif str([movesMade[0][1], movesMade[0][0]]) in firstMovesPlayer2:
+                                    firstMovesPlayer2[str([movesMade[0][1], movesMade[0][0]])] += 1
+                                else:
+                                    firstMovesPlayer2[str(movesMade[0])] = 1
+                                
+                            if str(movesMade[:2]) not in firstTwoMovesPlayer2:
+                                firstTwoMovesPlayer2[str(movesMade[:2])] = 1
+                            else:
+                                newTwoMoves = [[movesMade[0][1], movesMade[0][0]], [movesMade[1][1], movesMade[1][0]]]
+                                if str(newTwoMoves) not in firstTwoMovesPlayer2:
+                                    firstTwoMovesPlayer2[str(movesMade[:2])] += 1
+                                else:
+                                    firstTwoMovesPlayer2[str(newTwoMoves)] += 1
                     permDict[currentPlayer%player_number] += 1
                     game += 1
                 for row in range(self.size):
                     for column in range(self.size):
                         if self.matrix[row][column] > 1:
                             self.matrix[row][column] = 1
-
+        
+        bestMoveValue = 0
+        worstMoveValue = 1
+        bestTwoMoveValue = 0
+        worstTwoMoveValue = 0
+        
+        for move in firstMovesPlayer1:
+            winrate = firstMovesPlayer1[move]/ (firstMovesPlayer1[move] + firstMovesPlayer2[move])
+            if bestMoveValue < winrate:
+                bestMoveValue = winrate
+                bestMove = move
+            if worstMoveValue > winrate:
+                worstMoveValue = winrate
+                worstMove = move
+                
+        for move in firstTwoMovesPlayer1:
+            if bestTwoMoveValue < firstTwoMovesPlayer1[move]:
+                bestTwoMoveValue = firstTwoMovesPlayer1[move]
+                bestTwoMove = move
+        
+        for move in firstTwoMovesPlayer2:
+            if worstTwoMoveValue < firstTwoMovesPlayer2[move]:
+                worstTwoMoveValue = firstTwoMovesPlayer2[move]
+                worstTwoMove = move
+        
+        print("Player 1's best first move is "  + bestMove + " with a winrate of " + str(round(bestMoveValue, 3)))
+        print("Player 1's worst first move is "  + worstMove + " with a winrate of " + str(round(worstMoveValue, 3)))
+        
+        #fix later
+        ''''print("Player 2's best first move is "  + worstTwoMove)
+        print("Player 2's worst first move is "  + bestTwoMove)'''
+        
         if not hasCycles:
             outfile = open("Current_Trees.txt", "w")
         else:
@@ -431,3 +509,25 @@ test.addCycle([1,6,2,3])
 test.showMatrix()
 
 test.simulateGame(2, True)
+
+'''test2 = GameofCycles(9)
+
+test2.addEdge(0, 1)
+
+test2.addEdge(1, 2)
+
+test2.addEdge(2, 3)
+
+test2.addEdge(3, 4)
+
+test2.addEdge(4, 5)
+
+test2.addEdge(5, 6)
+
+test2.addEdge(6, 7)
+
+test2.addEdge(6, 8)
+
+test2.showMatrix()
+
+test2.simulateGame(2)'''
