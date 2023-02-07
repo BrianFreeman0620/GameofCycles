@@ -444,19 +444,28 @@ class GameofCycles:
         worstMoveValue = 1
         bestTwoMoveValue = 0
         worstTwoMoveValue = 0
+        bestMove = "none"
+        worstMove = "none"
         
-        for move in firstMovesPlayer1:
-            if move not in firstMovesPlayer2:
+        for move in firstMovesPlayer2:
+            if move not in firstMovesPlayer1:
                 winrate = 1
             else:
-                winrate = firstMovesPlayer1[move]/ (firstMovesPlayer1[move] + firstMovesPlayer2[move])
-            if bestMoveValue < winrate:
+                winrate = firstMovesPlayer2[move]/ (firstMovesPlayer1[move] + firstMovesPlayer2[move])
+            if bestMoveValue <= winrate:
                 bestMoveValue = winrate
                 bestMove = move
             if worstMoveValue >= winrate:
                 worstMoveValue = winrate
                 worstMove = move
                 
+        for move in firstMovesPlayer1:
+            if move not in firstMovesPlayer2:
+                worstMoveValue = 0
+                worstMove = move
+        
+        #fix later
+        '''        
         for move in firstTwoMovesPlayer1:
             if bestTwoMoveValue < firstTwoMovesPlayer1[move]:
                 bestTwoMoveValue = firstTwoMovesPlayer1[move]
@@ -465,7 +474,7 @@ class GameofCycles:
         for move in firstTwoMovesPlayer2:
             if worstTwoMoveValue < firstTwoMovesPlayer2[move]:
                 worstTwoMoveValue = firstTwoMovesPlayer2[move]
-                worstTwoMove = move
+                worstTwoMove = move'''
         
         if not hasCycles:
             outfile = open("Current_Trees.txt", "w")
@@ -492,9 +501,9 @@ class GameofCycles:
         print("Player 2's worst first move is "  + bestTwoMove)'''
                 
         outfile.close()
-                
-                    
-test = GameofCycles(7)
+        
+#cycle graph 1
+'''test = GameofCycles(7)
 test.addEdge(5,4)
 test.addEdge(4,0)
 test.addEdge(0,5)
@@ -511,8 +520,9 @@ test.addCycle([1,6,2,3])
 
 test.showMatrix()
 
-test.simulateGame(2, True)
+test.simulateGame(2, True)'''
 
+#tree graph 1
 '''test2 = GameofCycles(9)
 
 test2.addEdge(0, 1)
@@ -534,3 +544,14 @@ test2.addEdge(6, 8)
 test2.showMatrix()
 
 test2.simulateGame(2)'''
+
+test3 = GameofCycles(6)
+test3.addEdge(0,1)
+test3.addEdge(1,2)
+test3.addEdge(2,3)
+test3.addEdge(3,4)
+test3.addEdge(4,5)
+test3.addEdge(5,0)
+
+test3.addCycle([0,1,2,3,4,5])
+test3.simulateGame(2, True)
