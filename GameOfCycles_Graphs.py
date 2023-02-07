@@ -446,11 +446,14 @@ class GameofCycles:
         worstTwoMoveValue = 0
         
         for move in firstMovesPlayer1:
-            winrate = firstMovesPlayer1[move]/ (firstMovesPlayer1[move] + firstMovesPlayer2[move])
+            if move not in firstMovesPlayer2:
+                winrate = 1
+            else:
+                winrate = firstMovesPlayer1[move]/ (firstMovesPlayer1[move] + firstMovesPlayer2[move])
             if bestMoveValue < winrate:
                 bestMoveValue = winrate
                 bestMove = move
-            if worstMoveValue > winrate:
+            if worstMoveValue >= winrate:
                 worstMoveValue = winrate
                 worstMove = move
                 
@@ -463,13 +466,6 @@ class GameofCycles:
             if worstTwoMoveValue < firstTwoMovesPlayer2[move]:
                 worstTwoMoveValue = firstTwoMovesPlayer2[move]
                 worstTwoMove = move
-        
-        print("Player 1's best first move is "  + bestMove + " with a winrate of " + str(round(bestMoveValue, 3)))
-        print("Player 1's worst first move is "  + worstMove + " with a winrate of " + str(round(worstMoveValue, 3)))
-        
-        #fix later
-        ''''print("Player 2's best first move is "  + worstTwoMove)
-        print("Player 2's worst first move is "  + bestTwoMove)'''
         
         if not hasCycles:
             outfile = open("Current_Trees.txt", "w")
@@ -487,6 +483,13 @@ class GameofCycles:
                 outfile.write("Player " + str(player_number) + " won " + str(round(permDict[player]/game * 100, 2)) + "% of games\n")
             else:
                 outfile.write("Player " + str(player) + " won " + str(round(permDict[player]/game * 100, 2)) + "% of games\n")
+        
+        outfile.write("Player 1's best first move is "  + bestMove + " with a winrate of " + str(round(bestMoveValue, 3)) + "\n")
+        outfile.write("Player 1's worst first move is "  + worstMove + " with a winrate of " + str(round(worstMoveValue, 3)) + "\n")
+        
+        #fix later
+        ''''print("Player 2's best first move is "  + worstTwoMove)
+        print("Player 2's worst first move is "  + bestTwoMove)'''
                 
         outfile.close()
                 
