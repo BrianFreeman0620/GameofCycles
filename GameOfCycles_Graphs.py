@@ -5,7 +5,7 @@ Created on Tue Nov 15 10:40:05 2022
 @author: bushra and brian
 """
 
-from itertools import combinations
+from itertools import combinations, permutations
 import random
 import copy
 
@@ -290,7 +290,7 @@ class GameofCycles:
                     winner = True
                     break
                 
-    def simulateGame(self, player_number, hasCycles = False):
+    def simulateGame(self, player_number, hasCycles = False, thorough = False):
         possibleMoves = []
         for row in range(self.size):
             for column in range(self.size):
@@ -319,22 +319,29 @@ class GameofCycles:
             permList.append(dummyPerm)
         
         newPermList = []
-        for perm in permList:
-            randomPositions = []
-            for position in range(len(perm)):
-                randomPositions.append([])
-                for position2 in range(len(perm)):
-                    randomPositions[position].append(position2)
-                random.shuffle(randomPositions[position])
-            
-            newPerms = []
-            
-            for permutation in range(len(perm)):
-                newPerms.append([])
-                for move in range(len(perm)):
-                    newPerms[permutation].append(perm[randomPositions[permutation][move]])
+        
+        if not thorough:
+            for perm in permList:
+                randomPositions = []
+                for position in range(len(perm)):
+                    randomPositions.append([])
+                    for position2 in range(len(perm)):
+                        randomPositions[position].append(position2)
+                    random.shuffle(randomPositions[position])
                 
-                newPermList.append(newPerms[permutation])
+                newPerms = []
+                
+                for permutation in range(len(perm)):
+                    newPerms.append([])
+                    for move in range(len(perm)):
+                        newPerms[permutation].append(perm[randomPositions[permutation][move]])
+                    
+                    newPermList.append(newPerms[permutation])
+        else:
+            for perm in permList:
+                newPermutations = list(permutations((perm), len(perm)))
+                for newPerm in newPermutations:
+                    newPermList.append(newPerm)
         
         permDict = {}
         winningSet = []
@@ -361,7 +368,7 @@ class GameofCycles:
                 if alreadyPlayed:
                     break
             
-            if not alreadyPlayed:
+            if not alreadyPlayed or thorough:
                 currentPlayer = 0
                 movesMade = []
                 for move in perm:
@@ -372,10 +379,16 @@ class GameofCycles:
                         currentPlayer += 1
                     movesMade.append(move)
                 if self.checkWin():
-                    if self.matrix in winningMatrices:
+                    if self.matrix in winningMatrices and not thorough:
                         game -= 1
                         permDict[currentPlayer%player_number] -= 1
                     else:
+                        if thorough:
+                            if self.matrix in winningMatrices:
+                                game -= 1
+                                permDict[currentPlayer%player_number] -= 1
+                            else:
+                                print("Current game: " + str(game))
                         winningMatrices.append(copy.deepcopy(self.matrix))
                         if currentPlayer%player_number == 0:
                             correspondingWinner.append(player_number)
@@ -492,13 +505,13 @@ class GameofCycles:
                 outfile.write("Player " + str(player_number) + " won " + str(round(permDict[player]/game * 100, 2)) + "% of games\n")
             else:
                 outfile.write("Player " + str(player) + " won " + str(round(permDict[player]/game * 100, 2)) + "% of games\n")
-        
-        outfile.write("Player 1's best first move is "  + bestMove + " with a winrate of " + str(round(bestMoveValue, 3)) + "\n")
-        outfile.write("Player 1's worst first move is "  + worstMove + " with a winrate of " + str(round(worstMoveValue, 3)) + "\n")
-        
-        #fix later
-        ''''print("Player 2's best first move is "  + worstTwoMove)
-        print("Player 2's worst first move is "  + bestTwoMove)'''
+        if thorough:
+            outfile.write("Player 1's best first move is "  + bestMove + " with a winrate of " + str(round(bestMoveValue, 3)) + "\n")
+            outfile.write("Player 1's worst first move is "  + worstMove + " with a winrate of " + str(round(worstMoveValue, 3)) + "\n")
+            
+            #fix later
+            ''''print("Player 2's best first move is "  + worstTwoMove)
+            print("Player 2's worst first move is "  + bestTwoMove)'''
                 
         outfile.close()
         
@@ -545,13 +558,14 @@ test2.showMatrix()
 
 test2.simulateGame(2)'''
 
-test3 = GameofCycles(6)
+test3 = GameofCycles(4)
 test3.addEdge(0,1)
+test3.addEdge(0,2)
+test3.addEdge(0,3)
 test3.addEdge(1,2)
 test3.addEdge(2,3)
-test3.addEdge(3,4)
-test3.addEdge(4,5)
-test3.addEdge(5,0)
 
-test3.addCycle([0,1,2,3,4,5])
+
+test3.addCycle([0,1,2])
+test3.addCycle([0,2,3])
 test3.simulateGame(2, True)
