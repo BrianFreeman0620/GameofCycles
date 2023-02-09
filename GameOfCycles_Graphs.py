@@ -344,6 +344,7 @@ class GameofCycles:
                     newPermList.append(newPerm)
         
         permDict = {}
+        movesMadeDict = {}
         winningSet = []
         winningMatrices = []
         correspondingWinner = []
@@ -354,8 +355,9 @@ class GameofCycles:
         
         firstMovesPlayer1 = {}
         firstMovesPlayer2 = {}
-        firstTwoMovesPlayer1 = {}
-        firstTwoMovesPlayer2 = {}
+        
+        '''firstTwoMovesPlayer1 = {}
+        firstTwoMovesPlayer2 = {}'''
         
         for perm in newPermList:
             alreadyPlayed = False
@@ -379,7 +381,12 @@ class GameofCycles:
                         currentPlayer += 1
                     movesMade.append(move)
                 if self.checkWin():
-                    if self.matrix in winningMatrices and not thorough:
+                    if str(movesMade) not in movesMadeDict and thorough:
+                        movesMadeDict[str(movesMade)] = str(movesMade)
+                        newMovesMade = True
+                    else:
+                        newMovesMade = False
+                    if self.matrix in winningMatrices and (not thorough or not newMovesMade):
                         game -= 1
                         permDict[currentPlayer%player_number] -= 1
                     else:
@@ -389,7 +396,9 @@ class GameofCycles:
                                 permDict[currentPlayer%player_number] -= 1
                             else:
                                 print("Current game: " + str(game))
-                        winningMatrices.append(copy.deepcopy(self.matrix))
+                                winningMatrices.append(copy.deepcopy(self.matrix))
+                        else:
+                            winningMatrices.append(copy.deepcopy(self.matrix))
                         if currentPlayer%player_number == 0:
                             correspondingWinner.append(player_number)
                             if str([movesMade[0][1], movesMade[0][0]]) in firstMovesPlayer2:
@@ -410,14 +419,14 @@ class GameofCycles:
                                 else:
                                     firstMovesPlayer1[str(movesMade[0])] = 1
                                 
-                            if str(movesMade[:2]) not in firstTwoMovesPlayer1:
+                            '''if str(movesMade[:2]) not in firstTwoMovesPlayer1:
                                 firstTwoMovesPlayer1[str(movesMade[:2])] = 1 
                             else:
                                 newTwoMoves = [[movesMade[0][1], movesMade[0][0]], [movesMade[1][1], movesMade[1][0]]]
                                 if str(newTwoMoves) not in firstTwoMovesPlayer1:
                                     firstTwoMovesPlayer1[str(movesMade[:2])] += 1
                                 else:
-                                    firstTwoMovesPlayer1[str(newTwoMoves)] += 1
+                                    firstTwoMovesPlayer1[str(newTwoMoves)] += 1'''
                         else:
                             correspondingWinner.append(currentPlayer%player_number)
                             if str([movesMade[0][1], movesMade[0][0]]) in firstMovesPlayer1:
@@ -438,14 +447,14 @@ class GameofCycles:
                                 else:
                                     firstMovesPlayer2[str(movesMade[0])] = 1
                                 
-                            if str(movesMade[:2]) not in firstTwoMovesPlayer2:
+                            '''if str(movesMade[:2]) not in firstTwoMovesPlayer2:
                                 firstTwoMovesPlayer2[str(movesMade[:2])] = 1
                             else:
                                 newTwoMoves = [[movesMade[0][1], movesMade[0][0]], [movesMade[1][1], movesMade[1][0]]]
                                 if str(newTwoMoves) not in firstTwoMovesPlayer2:
                                     firstTwoMovesPlayer2[str(movesMade[:2])] += 1
                                 else:
-                                    firstTwoMovesPlayer2[str(newTwoMoves)] += 1
+                                    firstTwoMovesPlayer2[str(newTwoMoves)] += 1'''
                     permDict[currentPlayer%player_number] += 1
                     game += 1
                 for row in range(self.size):
@@ -455,8 +464,8 @@ class GameofCycles:
         
         bestMoveValue = 0
         worstMoveValue = 1
-        bestTwoMoveValue = 0
-        worstTwoMoveValue = 0
+        '''bestTwoMoveValue = 0
+        worstTwoMoveValue = 0'''
         bestMove = "none"
         worstMove = "none"
         
@@ -536,7 +545,7 @@ test.showMatrix()
 test.simulateGame(2, True)'''
 
 #tree graph 1
-'''test2 = GameofCycles(9)
+test2 = GameofCycles(9)
 
 test2.addEdge(0, 1)
 
@@ -552,13 +561,14 @@ test2.addEdge(5, 6)
 
 test2.addEdge(6, 7)
 
-test2.addEdge(6, 8)
+test2.addEdge(7, 8)
 
 test2.showMatrix()
 
-test2.simulateGame(2)'''
+test2.simulateGame(2, False, True)
 
-test3 = GameofCycles(4)
+#cycle graph 2
+'''test3 = GameofCycles(4)
 test3.addEdge(0,1)
 test3.addEdge(0,2)
 test3.addEdge(0,3)
@@ -568,4 +578,4 @@ test3.addEdge(2,3)
 
 test3.addCycle([0,1,2])
 test3.addCycle([0,2,3])
-test3.simulateGame(2, True)
+test3.simulateGame(2, True, True)'''
