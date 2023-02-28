@@ -290,7 +290,19 @@ class GameofCycles:
                     winner = True
                     break
                 
-    def simulateGame(self, player_number, hasCycles = False, thorough = False):
+    def simulateGame(self, player_number, thorough = False):
+        startingBoard = copy.deepcopy(self.matrix)
+        markedStart = False
+        startingPlayer = 0
+        
+        for row in range(self.size):
+            for column in range(self.size):
+                if self.matrix[row][column] > 1:
+                    markedStart = True
+                    startingPlayer += 1
+                    
+        startingPlayer = int(startingPlayer/2)
+        
         possibleMoves = []
         for row in range(self.size):
             for column in range(self.size):
@@ -341,8 +353,10 @@ class GameofCycles:
             for perm in permList:
                 newPermutations = list(permutations((perm), len(perm)))
                 for newPerm in newPermutations:
-                    newPermList.append(newPerm)
+                    if newPerm[0][0] < newPerm[0][1] or markedStart:
+                        newPermList.append(newPerm)
         
+        print(len(newPermList))
         permDict = {}
         movesMadeDict = {}
         winningSet = []
@@ -371,7 +385,7 @@ class GameofCycles:
                     break
             
             if not alreadyPlayed or thorough:
-                currentPlayer = 0
+                currentPlayer = startingPlayer
                 movesMade = []
                 for move in perm:
                     if self.checkWin():
@@ -379,6 +393,8 @@ class GameofCycles:
                         break 
                     elif self.addDirection(move[0], move[1], False):
                         currentPlayer += 1
+                    else:
+                        break
                     movesMade.append(move)
                 if self.checkWin():
                     if str(movesMade) not in movesMadeDict and thorough:
@@ -390,6 +406,8 @@ class GameofCycles:
                         game -= 1
                         permDict[currentPlayer%player_number] -= 1
                     else:
+                        if not self.matrix in winningMatrices:
+                            correspondingWinner.append(currentPlayer%player_number)
                         if thorough:
                             if self.matrix in winningMatrices:
                                 game -= 1
@@ -400,7 +418,6 @@ class GameofCycles:
                         else:
                             winningMatrices.append(copy.deepcopy(self.matrix))
                         if currentPlayer%player_number == 0:
-                            correspondingWinner.append(player_number)
                             if str([movesMade[0][1], movesMade[0][0]]) in firstMovesPlayer2:
                                 if str([movesMade[0][1], movesMade[0][0]]) not in firstMovesPlayer1:
                                     firstMovesPlayer1[str([movesMade[0][1], movesMade[0][0]])] = 1
@@ -428,7 +445,6 @@ class GameofCycles:
                                 else:
                                     firstTwoMovesPlayer1[str(newTwoMoves)] += 1'''
                         else:
-                            correspondingWinner.append(currentPlayer%player_number)
                             if str([movesMade[0][1], movesMade[0][0]]) in firstMovesPlayer1:
                                 if str([movesMade[0][1], movesMade[0][0]]) not in firstMovesPlayer2:
                                     firstMovesPlayer2[str([movesMade[0][1], movesMade[0][0]])] = 1
@@ -457,10 +473,7 @@ class GameofCycles:
                                     firstTwoMovesPlayer2[str(newTwoMoves)] += 1'''
                     permDict[currentPlayer%player_number] += 1
                     game += 1
-                for row in range(self.size):
-                    for column in range(self.size):
-                        if self.matrix[row][column] > 1:
-                            self.matrix[row][column] = 1
+                self.matrix = copy.deepcopy(startingBoard)
         
         bestMoveValue = 0
         worstMoveValue = 1
@@ -498,10 +511,7 @@ class GameofCycles:
                 worstTwoMoveValue = firstTwoMovesPlayer2[move]
                 worstTwoMove = move'''
         
-        if not hasCycles:
-            outfile = open("Current_Trees.txt", "w")
-        else:
-            outfile = open("Current_Cycles.txt", "w")
+        outfile = open("Current_Game.txt", "w")
         outfile.write(self.returnMatrix())
         for matrix in range(len(winningMatrices)):
             outfile.write("Game " + str(matrix + 1) + ": Player " + str(correspondingWinner[matrix]) + " win\n")
@@ -514,13 +524,15 @@ class GameofCycles:
                 outfile.write("Player " + str(player_number) + " won " + str(round(permDict[player]/game * 100, 2)) + "% of games\n")
             else:
                 outfile.write("Player " + str(player) + " won " + str(round(permDict[player]/game * 100, 2)) + "% of games\n")
-        if thorough:
+        '''if thorough:
             outfile.write("Player 1's best first move is "  + bestMove + " with a winrate of " + str(round(bestMoveValue, 3)) + "\n")
-            outfile.write("Player 1's worst first move is "  + worstMove + " with a winrate of " + str(round(worstMoveValue, 3)) + "\n")
+            outfile.write("Player 1's worst first move is "  + worstMove + " with a winrate of " + str(round(worstMoveValue, 3)) + "\n")'''
+        outfile.write("Player 1's best first move is "  + bestMove + " with a winrate of " + str(round(bestMoveValue, 3)) + "\n")
+        outfile.write("Player 1's worst first move is "  + worstMove + " with a winrate of " + str(round(worstMoveValue, 3)) + "\n")
             
             #fix later
-            ''''print("Player 2's best first move is "  + worstTwoMove)
-            print("Player 2's worst first move is "  + bestTwoMove)'''
+            #print("Player 2's best first move is "  + worstTwoMove)
+            #print("Player 2's worst first move is "  + bestTwoMove)
                 
         outfile.close()
         
@@ -542,10 +554,10 @@ test.addCycle([1,6,2,3])
 
 test.showMatrix()
 
-test.simulateGame(2, True)'''
+test.simulateGame(2)'''
 
 #tree graph 1
-test2 = GameofCycles(9)
+'''test2 = GameofCycles(10)
 
 test2.addEdge(0, 1)
 
@@ -563,19 +575,19 @@ test2.addEdge(6, 7)
 
 test2.addEdge(7, 8)
 
+test2.addEdge(6, 9)
+
 test2.showMatrix()
 
-test2.simulateGame(2, False, True)
+test2.simulateGame(2)'''
 
 #cycle graph 2
-'''test3 = GameofCycles(4)
+test3 = GameofCycles(4)
 test3.addEdge(0,1)
 test3.addEdge(0,2)
-test3.addEdge(0,3)
 test3.addEdge(1,2)
-test3.addEdge(2,3)
-
+test3.addEdge(1,3)
 
 test3.addCycle([0,1,2])
-test3.addCycle([0,2,3])
-test3.simulateGame(2, True, True)'''
+
+test3.simulateGame(2, True)
