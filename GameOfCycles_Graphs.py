@@ -578,26 +578,16 @@ test2.showMatrix()
 test2.simulateGame(2, True)'''
 
 #cycle graph 2
-test3 = GameofCycles(9)
-test3.addEdge(0, 1)
+test3 = GameofCycles(5)
+test3.addEdge(0, 2)
+test3.addEdge(0, 3)
+test3.addEdge(0, 4)
 test3.addEdge(1, 2)
-test3.addEdge(2, 3)
-test3.addEdge(3, 0)
-
 test3.addEdge(1, 4)
-test3.addEdge(4, 5)
-test3.addEdge(5, 2)
+test3.addEdge(2, 3)
 
-test3.addEdge(5, 6)
-test3.addEdge(6, 7)
-test3.addEdge(7, 2)
+test3.addCycle([0,2,3])
+test3.addCycle([0,2,4])
+test3.addCycle([1,2,4])
 
-test3.addEdge(7, 8)
-test3.addEdge(8, 3)
-
-test3.addCycle([0,1,2,3])
-test3.addCycle([1,2,5,4])
-test3.addCycle([2,5,6,7])
-test3.addCycle([3,2,7,8])
-
-test3.simulateGame(2)
+test3.simulateGame(2, True)
