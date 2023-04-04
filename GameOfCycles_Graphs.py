@@ -17,7 +17,7 @@ class GameofCycles:
     
     # Creates the Game of Cycles of given size
     def __init__(self, size):
-        self.matrix = [] # Adjacency matrix for edes
+        self.matrix = [] # Adjacency matrix for edges
         self.size = size
         for pointOne in range(self.size):
             self.matrix.append([])
