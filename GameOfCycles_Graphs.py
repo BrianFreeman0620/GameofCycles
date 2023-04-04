@@ -17,7 +17,7 @@ class GameofCycles:
     
     # Creates the Game of Cycles of given size
     def __init__(self, size):
-        self.matrix = []
+        self.matrix = [] # Adjacency matrix for edes
         self.size = size
         for pointOne in range(self.size):
             self.matrix.append([])
@@ -25,8 +25,8 @@ class GameofCycles:
                 self.matrix[pointOne].append(0)
         self.cycle = False
         self.path = False
-        self.edgeList = []
-        self.cellList = [] 
+        self.edgeList = [] # List of edges in graph
+        self.cellList = [] # List of valid cells
     
     # Shows the adjacency matrix            
     def showMatrix(self):
@@ -88,15 +88,17 @@ class GameofCycles:
             self.matrix[pointOne][pointTwo] = 1
             self.matrix[pointTwo][pointOne] = 1
             self.edgeList.append([pointOne, pointTwo])
-            #remove when planar is back in town
-            '''if self.isPlanar():
+            if self.isPlanar():
                 self.edges += 1
+            # Fails if the edge would make the graph nonplanar
             else:
                 self.matrix[pointOne][pointTwo] = 0
                 self.matrix[pointTwo][pointOne] = 0
-                print("That edge would make the graph nonplanar")'''
+                print("That edge would make the graph nonplanar")
+        # Fails if the edge is already in the graph
         elif not self.matrix[pointOne][pointTwo] == 0:
             print("That edge is already in the matrix")
+        # Fails if the edge points a vertex to itself
         else:
             print("A vertix cannot point to itself")
     
@@ -120,6 +122,7 @@ class GameofCycles:
     
    
     # Tries to add a direction to the game and returns True if the move is legal
+    # printError being True returns error, which is only used for player games
     def addDirection(self, pointOne, pointTwo, printError = True):
         if self.matrix[pointOne][pointTwo] == 1:
             self.matrix[pointOne][pointTwo] = 2
@@ -132,13 +135,16 @@ class GameofCycles:
             leafTwo = 0
             
             for i in range(self.size):
+                # Checks if pointOne is a leaf vertex
                 if not self.matrix[i][pointOne] == 0:
                     leafOne += 1
                 
+                # Checks if pointOne has unmarked edges
                 if self.matrix[i][pointOne] == 1:
                     sourceORsinkOne = False
                     break
                 
+                # Checks if pointOne has two edges pointing opposite directions
                 if self.matrix[i][pointOne] == 2:
                     if edgeStatus == 1:
                         edgeStatus = 2
@@ -158,13 +164,16 @@ class GameofCycles:
             edgeStatus = 1
             
             for i in range(self.size):
+                # Checks if pointTwo is a leaf vertex
                 if not self.matrix[i][pointTwo] == 0:
                     leafTwo += 1
                     
+                 # Checks if pointTwo has unmarked edges
                 if self.matrix[i][pointTwo] == 1:
                     sourceORsinkTwo = False
                     break
                 
+                # Checks if pointTwo has two edges pointing opposite directions
                 if self.matrix[i][pointTwo] == 2:
                     if edgeStatus == 1:
                         edgeStatus = 2
@@ -180,7 +189,8 @@ class GameofCycles:
                         break
             if leafTwo == 1:
                 sourceORsinkTwo = False
-                
+            
+            # Fails if making the move creates a source or sink
             if sourceORsinkOne or sourceORsinkTwo:
                 if printError:
                     print("That move creates a source or a sink.")
@@ -189,11 +199,13 @@ class GameofCycles:
                 return False
             else:
                 return True
+        # Fails if the edge is not in the edge list or is already marked
         else:
             if printError:
                 print("This is an illegal move.")
             return False
         
+    # Checks if the edge between two points is unmarkable
     def checkUnmarkable(self, pointOne, pointTwo):
         pointOneDirection = 1
         rowOne = 1
@@ -201,13 +213,17 @@ class GameofCycles:
         leafValueRow = 0
         leafValueColumn = 0
         
+        # Fails if both points are the same
         if pointOne == pointTwo:
             print("This is an illegal move.")
         
         for i in range(self.size):
+            # Checks if pointOne is a leaf
             if not self.matrix[i][pointOne] == 0:
                 leafValueRow += 1
             
+            # Checks if every edge pointing to pointOne going the same way
+            # and has only one edge marked
             if self.matrix[i][pointOne] == 1 and rowOne == 1:
                 rowOne = 0
             elif self.matrix[i][pointOne] == 1 and rowOne == 0:
@@ -220,6 +236,8 @@ class GameofCycles:
         if leafValueRow == 1:
             return False
         
+        # Checks if every edge pointing to pointTwo going the same way
+        # and has only one edge marked
         for j in range(self.size):
             if not self.matrix[pointTwo][j] == 0:
                 leafValueColumn += 1
@@ -234,12 +252,16 @@ class GameofCycles:
             
         if leafValueColumn == 1:
             return False
+        # If playing an edge in either direction causes a source or a sink, 
+        # returns the edge is unmarkable
         else:
             return True
     
+    # Checks if there is a winner
     def checkWin(self):
         used = 0
         
+        # Checks if every edge is either unmarkable or already marked
         for i in range(self.size):
             for j in range(self.size):
                 if i > j:
@@ -248,7 +270,6 @@ class GameofCycles:
                     elif self.matrix[i][j] == 1:
                         if self.checkUnmarkable(i,j):
                             used += 1
-                    #elif self.matrix[i][j] == 
                     else:
                         used += 1
                         
@@ -256,6 +277,7 @@ class GameofCycles:
         
         if used == len(self.edgeList):
             return True
+        # Checks if any cells have been completed
         else:
             for cycle in self.cellList:
                 completeCycle = True
@@ -271,7 +293,7 @@ class GameofCycles:
                     return True
             return False 
         
-        # Plays the game with given number of players
+    # Plays the game with given number of players
     def playGame(self, player_number):
         winner = False
         while not winner:
@@ -289,12 +311,15 @@ class GameofCycles:
                     print("\nPlayer", playerTurn, "wins!")
                     winner = True
                     break
-                
+    
+    # Simulates a board at a given state to see winners on different end states
+    # Only turn on thorough to see every end state as it is very slow
     def simulateGame(self, player_number, thorough = False):
         startingBoard = copy.deepcopy(self.matrix)
         markedStart = False
         startingPlayer = 0
         
+        # Checks who should play first, as a marked board can be inserted
         for row in range(self.size):
             for column in range(self.size):
                 if self.matrix[row][column] > 1:
@@ -303,22 +328,26 @@ class GameofCycles:
                     
         startingPlayer = int(startingPlayer/2)
         
+        # Finds all possible moves in one direction
         possibleMoves = []
         for row in range(self.size):
             for column in range(self.size):
                 if self.matrix[row][column] == 1 and row < column:
                     possibleMoves.append([row, column])
         
+        # Creates a list of numbers from 0 to number of playable moves
         positionList = []
         for number in range(len(possibleMoves)):
             positionList.append(number)
         
+        # Creates a list of all combination of numbers in the positionList
         combList = []
         for number in range(len(possibleMoves) + 1):
             dummyList = list(combinations(positionList, number))
             for element in dummyList:
                 combList.append(element)
         
+        # Creates a list that flips the direction of certain moves to get all combinations
         permList = []
         for comb in combList:
             dummyPerm = []
@@ -332,6 +361,7 @@ class GameofCycles:
         
         newPermList = []
         
+        # Randomly picks played move orders if not thorough
         if not thorough:
             for perm in permList:
                 randomPositions = []
@@ -349,6 +379,7 @@ class GameofCycles:
                         newPerms[permutation].append(perm[randomPositions[permutation][move]])
                     
                     newPermList.append(newPerms[permutation])
+        # Finds every played move order if thorough
         else:
             for perm in permList:
                 newPermutations = list(permutations((perm), len(perm)))
@@ -356,6 +387,7 @@ class GameofCycles:
                     if newPerm[0][0] < newPerm[0][1] or markedStart:
                         newPermList.append(newPerm)
         
+        # Prints the number of orders of moves that will be simulated
         print(len(newPermList))
         permDict = {}
         movesMadeDict = {}
@@ -370,11 +402,14 @@ class GameofCycles:
         firstMovesPlayer1 = {}
         firstMovesPlayer2 = {}
         
+        # Was going to find first two moves, gave up since lost interest
         '''firstTwoMovesPlayer1 = {}
         firstTwoMovesPlayer2 = {}'''
         
+        # Looks at every permutation
         for perm in newPermList:
             alreadyPlayed = False
+            # Checks if the beginning part of a sequence of moves has already been played
             for gamesPlayed in winningSet:
                 alreadyPlayed = True
                 for movePlayed in range(len(gamesPlayed)):
@@ -384,9 +419,12 @@ class GameofCycles:
                 if alreadyPlayed:
                     break
             
+            # Will run if not already played or all games are being simulated
             if not alreadyPlayed or thorough:
                 currentPlayer = startingPlayer
                 movesMade = []
+                # Plays until an illegal move is played, all moves are played,
+                # or a winner was found
                 for move in perm:
                     if self.checkWin():
                         winningSet.append(movesMade)
@@ -396,6 +434,7 @@ class GameofCycles:
                     else:
                         break
                     movesMade.append(move)
+                # Checks if a winner is found
                 if self.checkWin():
                     if str(movesMade) not in movesMadeDict and thorough:
                         movesMadeDict[str(movesMade)] = str(movesMade)
@@ -406,17 +445,20 @@ class GameofCycles:
                         game -= 1
                         permDict[currentPlayer%player_number] -= 1
                     else:
+                        # Adds the end state to the winningMatrices list if it is a new win
                         if not self.matrix in winningMatrices:
                             correspondingWinner.append(currentPlayer%player_number)
                         if thorough:
                             if self.matrix in winningMatrices:
                                 game -= 1
                                 permDict[currentPlayer%player_number] -= 1
+                            # Prints number of completed games to show the program's progress
                             else:
                                 print("Current game: " + str(game))
                                 winningMatrices.append(copy.deepcopy(self.matrix))
                         else:
                             winningMatrices.append(copy.deepcopy(self.matrix))
+                        # Finds the first move played on a board for player 1's win
                         if currentPlayer%player_number == 0:
                             if str([movesMade[0][1], movesMade[0][0]]) in firstMovesPlayer2:
                                 if str([movesMade[0][1], movesMade[0][0]]) not in firstMovesPlayer1:
@@ -435,15 +477,8 @@ class GameofCycles:
                                     firstMovesPlayer1[str([movesMade[0][1], movesMade[0][0]])] += 1
                                 else:
                                     firstMovesPlayer1[str(movesMade[0])] = 1
-                                
-                            '''if str(movesMade[:2]) not in firstTwoMovesPlayer1:
-                                firstTwoMovesPlayer1[str(movesMade[:2])] = 1 
-                            else:
-                                newTwoMoves = [[movesMade[0][1], movesMade[0][0]], [movesMade[1][1], movesMade[1][0]]]
-                                if str(newTwoMoves) not in firstTwoMovesPlayer1:
-                                    firstTwoMovesPlayer1[str(movesMade[:2])] += 1
-                                else:
-                                    firstTwoMovesPlayer1[str(newTwoMoves)] += 1'''
+                        
+                        # Finds the first move played on a board for player 2's win
                         else:
                             if str([movesMade[0][1], movesMade[0][0]]) in firstMovesPlayer1:
                                 if str([movesMade[0][1], movesMade[0][0]]) not in firstMovesPlayer2:
@@ -462,26 +497,19 @@ class GameofCycles:
                                     firstMovesPlayer2[str([movesMade[0][1], movesMade[0][0]])] += 1
                                 else:
                                     firstMovesPlayer2[str(movesMade[0])] = 1
-                                
-                            '''if str(movesMade[:2]) not in firstTwoMovesPlayer2:
-                                firstTwoMovesPlayer2[str(movesMade[:2])] = 1
-                            else:
-                                newTwoMoves = [[movesMade[0][1], movesMade[0][0]], [movesMade[1][1], movesMade[1][0]]]
-                                if str(newTwoMoves) not in firstTwoMovesPlayer2:
-                                    firstTwoMovesPlayer2[str(movesMade[:2])] += 1
-                                else:
-                                    firstTwoMovesPlayer2[str(newTwoMoves)] += 1'''
+                
                     permDict[currentPlayer%player_number] += 1
                     game += 1
+                # Deep copies the matrix to prevent writing over the original
+                # startingBoard object
                 self.matrix = copy.deepcopy(startingBoard)
         
         bestMoveValue = 0
         worstMoveValue = 1
-        '''bestTwoMoveValue = 0
-        worstTwoMoveValue = 0'''
         bestMove = "none"
         worstMove = "none"
         
+        # Finds which move had the best winrate and worst winrate for player 1
         for move in firstMovesPlayer2:
             if move not in firstMovesPlayer1:
                 winrate = 1
@@ -493,24 +521,14 @@ class GameofCycles:
             if worstMoveValue >= winrate:
                 worstMoveValue = winrate
                 worstMove = move
-                
+        
+        # Runs if player 1 cannot win on a given board
         for move in firstMovesPlayer1:
             if move not in firstMovesPlayer2:
                 worstMoveValue = 0
                 worstMove = move
         
-        #fix later
-        '''        
-        for move in firstTwoMovesPlayer1:
-            if bestTwoMoveValue < firstTwoMovesPlayer1[move]:
-                bestTwoMoveValue = firstTwoMovesPlayer1[move]
-                bestTwoMove = move
-        
-        for move in firstTwoMovesPlayer2:
-            if worstTwoMoveValue < firstTwoMovesPlayer2[move]:
-                worstTwoMoveValue = firstTwoMovesPlayer2[move]
-                worstTwoMove = move'''
-        
+        # Writes out the data onto a text file called Current_Game.txt
         outfile = open("Current_Game.txt", "w")
         outfile.write(self.returnMatrix())
         for matrix in range(len(winningMatrices)):
@@ -524,18 +542,13 @@ class GameofCycles:
                 outfile.write("Player " + str(player_number) + " won " + str(round(permDict[player]/game * 100, 2)) + "% of games\n")
             else:
                 outfile.write("Player " + str(player) + " won " + str(round(permDict[player]/game * 100, 2)) + "% of games\n")
-        '''if thorough:
-            outfile.write("Player 1's best first move is "  + bestMove + " with a winrate of " + str(round(bestMoveValue, 3)) + "\n")
-            outfile.write("Player 1's worst first move is "  + worstMove + " with a winrate of " + str(round(worstMoveValue, 3)) + "\n")'''
         outfile.write("Player 1's best first move is "  + bestMove + " with a winrate of " + str(round(bestMoveValue, 3)) + "\n")
         outfile.write("Player 1's worst first move is "  + worstMove + " with a winrate of " + str(round(worstMoveValue, 3)) + "\n")
             
-            #fix later
-            #print("Player 2's best first move is "  + worstTwoMove)
-            #print("Player 2's worst first move is "  + bestTwoMove)
-                
         outfile.close()
         
+# The following code is playing examples and commenting them out for later
+
 #cycle graph 1
 '''test = GameofCycles(7)
 test.addEdge(5,4)
@@ -585,9 +598,11 @@ test3.addEdge(0, 4)
 test3.addEdge(1, 2)
 test3.addEdge(1, 4)
 test3.addEdge(2, 3)
+test3.addEdge(2, 4)
 
 test3.addCycle([0,2,3])
 test3.addCycle([0,2,4])
 test3.addCycle([1,2,4])
 
-test3.simulateGame(2, True)
+test3.playGame(2)
+#test3.simulateGame(2, True)
