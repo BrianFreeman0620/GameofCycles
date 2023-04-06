@@ -334,6 +334,7 @@ class GameofCycles:
                             if self.matrix[row][column] == 1 and not self.checkUnmarkable(row, column):
                                 possibleMoves.append([row, column])
                     compMove = random.choice(possibleMoves)
+                    print("The computer played: " + str(compMove))
                     self.addDirection(compMove[0], compMove[1])
                 if self.checkWin():
                     self.showMatrix()
