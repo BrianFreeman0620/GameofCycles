@@ -17,7 +17,7 @@ class GameofCycles:
     
     # Creates the Game of Cycles of given size
     def __init__(self, size):
-        self.matrix = [] # Adjacency matrix for edges
+        self.matrix = [] # Adjacency matrix for edes
         self.size = size
         for pointOne in range(self.size):
             self.matrix.append([])
@@ -88,10 +88,8 @@ class GameofCycles:
             self.matrix[pointOne][pointTwo] = 1
             self.matrix[pointTwo][pointOne] = 1
             self.edgeList.append([pointOne, pointTwo])
-            if self.isPlanar():
-                self.edges += 1
             # Fails if the edge would make the graph nonplanar
-            else:
+            if not self.isPlanar():
                 self.matrix[pointOne][pointTwo] = 0
                 self.matrix[pointTwo][pointOne] = 0
                 print("That edge would make the graph nonplanar")
@@ -304,6 +302,7 @@ class GameofCycles:
                 destination = int(input("Choose a point to go to "))
                 while not self.addDirection(source, destination):
                     self.showMatrix()
+                    print("That is not a legal move")
                     source = int(input("\nChoose a point to start from "))
                     destination = int(input("Choose a point to go to "))
                 if self.checkWin():
@@ -311,6 +310,37 @@ class GameofCycles:
                     print("\nPlayer", playerTurn, "wins!")
                     winner = True
                     break
+                
+    def playComputer(self):
+        winner = False
+        print("Would you like to be player 1 or player 2?")
+        humanTurn = int(input("Type 1 for player 1 and 2 for player 2 "))
+        while not winner:
+            for playerTurn in range(1, 3):
+                if playerTurn == humanTurn:
+                    print("\nPlayer", str(playerTurn) + "'s turn\n")
+                    self.showMatrix()
+                    source = int(input("\nChoose a point to start from "))
+                    destination = int(input("Choose a point to go to "))
+                    while not self.addDirection(source, destination):
+                        self.showMatrix()
+                        print("That is not a legal move")
+                        source = int(input("\nChoose a point to start from "))
+                        destination = int(input("Choose a point to go to "))
+                else:
+                    possibleMoves = []
+                    for row in range(self.size):
+                        for column in range(self.size):
+                            if self.matrix[row][column] == 1 and not self.checkUnmarkable(row, column):
+                                possibleMoves.append([row, column])
+                    compMove = random.choice(possibleMoves)
+                    self.addDirection(compMove[0], compMove[1])
+                if self.checkWin():
+                    self.showMatrix()
+                    print("\nPlayer", playerTurn, "wins!")
+                    winner = True
+                    break
+                    
     
     # Simulates a board at a given state to see winners on different end states
     # Only turn on thorough to see every end state as it is very slow
@@ -591,6 +621,7 @@ test2.showMatrix()
 test2.simulateGame(2, True)'''
 
 #cycle graph 2
+
 test3 = GameofCycles(5)
 test3.addEdge(0, 2)
 test3.addEdge(0, 3)
@@ -604,5 +635,6 @@ test3.addCycle([0,2,3])
 test3.addCycle([0,2,4])
 test3.addCycle([1,2,4])
 
-test3.playGame(2)
+test3.playComputer()
+#test3.playGame(2)
 #test3.simulateGame(2, True)
