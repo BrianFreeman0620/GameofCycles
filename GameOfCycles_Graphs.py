@@ -331,9 +331,47 @@ class GameofCycles:
                     possibleMoves = []
                     for row in range(self.size):
                         for column in range(self.size):
-                            if self.matrix[row][column] == 1 and not self.checkUnmarkable(row, column):
+                            if self.matrix[row][column] == 1 and self.addDirection(row, column, False):
                                 possibleMoves.append([row, column])
-                    compMove = random.choice(possibleMoves)
+                                self.matrix[row][column] = 1
+                                self.matrix[column][row] = 1
+                    playWinning = False
+                    edgeWinning = []
+                    for moves in possibleMoves:
+                        self.addDirection(moves[0], moves[1], False)
+                        if self.checkWin():
+                            playWinning = True
+                            edgeWinning.append(moves)
+                        self.matrix[moves[0]][moves[1]] = 1
+                        self.matrix[moves[1]][moves[0]] = 1
+                    if not playWinning:
+                        edgeNotLosing = []
+                        for moves in possibleMoves:
+                            playLosing = False
+                            self.addDirection(moves[0], moves[1], False)
+                            possibleMoves2 = []
+                            for row in range(self.size):
+                                for column in range(self.size):
+                                    if self.matrix[row][column] == 1 and self.addDirection(row, column, False):
+                                        possibleMoves2.append([row, column])
+                                        self.matrix[row][column] = 1
+                                        self.matrix[column][row] = 1
+                            for moves2 in possibleMoves2:
+                                self.addDirection(moves2[0], moves2[1], False)
+                                if self.checkWin():
+                                    playLosing = True
+                                self.matrix[moves2[0]][moves2[1]] = 1
+                                self.matrix[moves2[1]][moves2[0]] = 1
+                            if not playLosing:
+                                edgeNotLosing.append(moves)
+                            self.matrix[moves[0]][moves[1]] = 1
+                            self.matrix[moves[1]][moves[0]] = 1
+                        if len(edgeNotLosing) > 0:
+                            compMove = random.choice(edgeNotLosing)
+                        else:
+                            compMove = random.choice(possibleMoves)
+                    else:
+                        compMove = edgeWinning[0]
                     print("The computer played: " + str(compMove))
                     self.addDirection(compMove[0], compMove[1])
                 if self.checkWin():
@@ -639,3 +677,18 @@ test3.addCycle([1,2,4])
 test3.playComputer()
 #test3.playGame(2)
 #test3.simulateGame(2, True)
+
+#cycle graph 3
+'''test4 = GameofCycles(6)
+test4.addEdge(0, 1)
+test4.addEdge(0, 4)
+test4.addEdge(1, 2)
+test4.addEdge(1, 4)
+test4.addEdge(2, 3)
+test4.addEdge(3, 4)
+test4.addEdge(4, 5)
+
+test4.addCycle([0,1,4])
+test4.addCycle([1,2,3,4])
+
+test4.playComputer()'''
