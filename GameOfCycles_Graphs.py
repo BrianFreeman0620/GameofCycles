@@ -310,7 +310,8 @@ class GameofCycles:
                     print("\nPlayer", playerTurn, "wins!")
                     winner = True
                     break
-                
+    
+    # Plays the game against a computer player
     def playComputer(self):
         winner = False
         print("Would you like to be player 1 or player 2?")
@@ -337,6 +338,7 @@ class GameofCycles:
                                 self.matrix[column][row] = 1
                     playWinning = False
                     edgeWinning = []
+                    # Finds all moves that allow the computer to win
                     for moves in possibleMoves:
                         self.addDirection(moves[0], moves[1], False)
                         if self.checkWin():
@@ -344,10 +346,12 @@ class GameofCycles:
                             edgeWinning.append(moves)
                         self.matrix[moves[0]][moves[1]] = 1
                         self.matrix[moves[1]][moves[0]] = 1
+                    # Runs if no move cause the computer to win
                     if not playWinning:
-                        edgeNotLosing = []
+                        edgeNotLosing = {}
                         for moves in possibleMoves:
                             playLosing = False
+                            unmarkables = 0
                             self.addDirection(moves[0], moves[1], False)
                             possibleMoves2 = []
                             for row in range(self.size):
@@ -356,20 +360,43 @@ class GameofCycles:
                                         possibleMoves2.append([row, column])
                                         self.matrix[row][column] = 1
                                         self.matrix[column][row] = 1
+                            # Finds all moves that would allow the player to play a winning move
                             for moves2 in possibleMoves2:
+                                if self.checkUnmarkable(moves2[0], moves2[1]):
+                                    unmarkables += 100
                                 self.addDirection(moves2[0], moves2[1], False)
+                                # Finds how many unmarkable edges come from the player
+                                # playing any of the remaining edges
+                                for moves3 in possibleMoves2:
+                                    if self.checkUnmarkable(moves3[0], moves3[1]):
+                                        unmarkables += 1
                                 if self.checkWin():
                                     playLosing = True
                                 self.matrix[moves2[0]][moves2[1]] = 1
                                 self.matrix[moves2[1]][moves2[0]] = 1
                             if not playLosing:
-                                edgeNotLosing.append(moves)
+                                edgeNotLosing[str(moves)] = unmarkables
                             self.matrix[moves[0]][moves[1]] = 1
                             self.matrix[moves[1]][moves[0]] = 1
+                        # Runs if there exists an edge that would not cause the computer to lose
                         if len(edgeNotLosing) > 0:
-                            compMove = random.choice(edgeNotLosing)
+                            unmarkablesValue = self.size ** 2
+                            unmarkablesList = []
+                            # Finds the edge that creates the fewest number of unmarkable edges
+                            for remainingEdges in edgeNotLosing:
+                                if unmarkablesValue > edgeNotLosing[remainingEdges]:
+                                    unmarkablesValue = edgeNotLosing[remainingEdges]
+                                    unmarkablesList = [remainingEdges]
+                                elif unmarkablesValue == edgeNotLosing[remainingEdges]:
+                                    unmarkablesList.append(remainingEdges)
+                            # Converts the move's string into a list
+                            compChoice = random.choice(unmarkablesList)
+                            compPsuedoList = compChoice.split(", ")
+                            compMove = [int(compPsuedoList[0][1:]), int(compPsuedoList[1][:-1])]
+                        # Runs if all moves cause the computer to lose
                         else:
                             compMove = random.choice(possibleMoves)
+                    # Runs if a move exists where the computer wins
                     else:
                         compMove = edgeWinning[0]
                     print("The computer played: " + str(compMove))
@@ -661,18 +688,14 @@ test2.simulateGame(2, True)'''
 
 #cycle graph 2
 
-test3 = GameofCycles(5)
-test3.addEdge(0, 2)
-test3.addEdge(0, 3)
-test3.addEdge(0, 4)
+test3 = GameofCycles(8)
+test3.addEdge(0, 1)
 test3.addEdge(1, 2)
-test3.addEdge(1, 4)
 test3.addEdge(2, 3)
-test3.addEdge(2, 4)
-
-test3.addCycle([0,2,3])
-test3.addCycle([0,2,4])
-test3.addCycle([1,2,4])
+test3.addEdge(3, 4)
+test3.addEdge(4, 5)
+test3.addEdge(5, 6)
+test3.addEdge(5, 7)
 
 test3.playComputer()
 #test3.playGame(2)
