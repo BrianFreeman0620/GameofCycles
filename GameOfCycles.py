@@ -1,8 +1,6 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Created on Tue Nov 15 10:40:05 2022
-@author: bushra and brian
+@author: Bushra Ibrahim and Brian Feeeman
 """
 
 from itertools import combinations, permutations
@@ -642,76 +640,3 @@ class GameofCycles:
         outfile.write("Player 1's worst first move is "  + worstMove + " with a winrate of " + str(round(worstMoveValue, 3)) + "\n")
             
         outfile.close()
-        
-# The following code is playing examples and commenting them out for later
-
-#cycle graph 1
-'''test = GameofCycles(7)
-test.addEdge(5,4)
-test.addEdge(4,0)
-test.addEdge(0,5)
-test.addEdge(1,3)
-test.addEdge(4,1)
-test.addEdge(2,3)
-test.addEdge(1,6)
-test.addEdge(3,0)
-test.addEdge(6,2)
-
-test.addCycle([0,4,5])
-test.addCycle([1,3,0,4])
-test.addCycle([1,6,2,3])
-
-test.showMatrix()
-
-test.simulateGame(2)'''
-
-#tree graph 1
-'''test2 = GameofCycles(8)
-
-test2.addEdge(0, 1)
-
-test2.addEdge(1, 2)
-
-test2.addEdge(2, 3)
-
-test2.addEdge(3, 4)
-
-test2.addEdge(4, 5)
-
-test2.addEdge(5, 6)
-
-test2.addEdge(4, 7)
-
-test2.showMatrix()
-
-test2.simulateGame(2, True)'''
-
-#cycle graph 2
-
-test3 = GameofCycles(8)
-test3.addEdge(0, 1)
-test3.addEdge(1, 2)
-test3.addEdge(2, 3)
-test3.addEdge(3, 4)
-test3.addEdge(4, 5)
-test3.addEdge(5, 6)
-test3.addEdge(5, 7)
-
-test3.playComputer()
-#test3.playGame(2)
-#test3.simulateGame(2, True)
-
-#cycle graph 3
-'''test4 = GameofCycles(6)
-test4.addEdge(0, 1)
-test4.addEdge(0, 4)
-test4.addEdge(1, 2)
-test4.addEdge(1, 4)
-test4.addEdge(2, 3)
-test4.addEdge(3, 4)
-test4.addEdge(4, 5)
-
-test4.addCycle([0,1,4])
-test4.addCycle([1,2,3,4])
-
-test4.playComputer()'''
