@@ -1,6 +1,8 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 Created on Tue Nov 15 10:40:05 2022
-@author: Bushra Ibrahim and Brian Feeeman
+@author: Bushra Ibrahim and Brian Freeman
 """
 
 from itertools import combinations, permutations
@@ -38,8 +40,9 @@ class GameofCycles:
             matrixString += str(row) + "\n"
         return matrixString
     
+    # Removed planar function as it only finds if K 3,3 or K 5 is in graph and not homeomorphic
     # Checks if the graph is planar and states reason if it isn't
-    def isPlanar(self):
+    '''def isPlanar(self):
         if self.size <= 4:
             return True
         else:
@@ -78,7 +81,7 @@ class GameofCycles:
                                                                 print("K 5")
                                                                 return False
                                                             
-            return True
+            return True'''
     
     # Adds edge to adjacency matrix starting at pointOne and going to pointTwo        
     def addEdge(self, pointOne, pointTwo):
@@ -87,10 +90,10 @@ class GameofCycles:
             self.matrix[pointTwo][pointOne] = 1
             self.edgeList.append([pointOne, pointTwo])
             # Fails if the edge would make the graph nonplanar
-            if not self.isPlanar():
+            '''if not self.isPlanar():
                 self.matrix[pointOne][pointTwo] = 0
                 self.matrix[pointTwo][pointOne] = 0
-                print("That edge would make the graph nonplanar")
+                print("That edge would make the graph nonplanar")'''
         # Fails if the edge is already in the graph
         elif not self.matrix[pointOne][pointTwo] == 0:
             print("That edge is already in the matrix")
@@ -640,3 +643,95 @@ class GameofCycles:
         outfile.write("Player 1's worst first move is "  + worstMove + " with a winrate of " + str(round(worstMoveValue, 3)) + "\n")
             
         outfile.close()
+        
+# The following code is playing examples and commenting them out for later
+
+#cycle graph 1
+test = GameofCycles(11)
+test.addEdge(0, 1)
+test.addEdge(0, 2)
+test.addEdge(0, 3)
+test.addEdge(0, 4)
+test.addEdge(1, 5)
+test.addEdge(5, 6)
+test.addEdge(6, 7)
+test.addEdge(7, 2)
+test.addEdge(3, 8)
+test.addEdge(8, 9)
+test.addEdge(4, 10)
+test.addEdge(9, 10)
+
+
+test.addCycle([0,1,5,6,7,2])
+test.addCycle([0,3,8,9,10,4])
+
+test.showMatrix()
+
+#test.playComputer()
+test.simulateGame(2)
+
+#tree graph 1
+'''test2 = GameofCycles(8)
+
+test2.addEdge(0, 1)
+
+test2.addEdge(1, 2)
+
+test2.addEdge(2, 3)
+
+test2.addEdge(3, 4)
+
+test2.addEdge(4, 5)
+
+test2.addEdge(5, 6)
+
+test2.addEdge(4, 7)
+
+test2.showMatrix()
+
+test2.simulateGame(2, True)'''
+
+#cycle graph 2
+'''
+test3 = GameofCycles(16)
+test3.makePath()
+
+#test3.playComputer()
+#test3.playGame(2)
+test3.simulateGame(2)
+'''
+#presentation graph
+'''test4 = GameofCycles(5)
+test4.addEdge(0, 1)
+test4.addEdge(0, 3)
+test4.addEdge(1, 2)
+test4.addEdge(1, 3)
+test4.addEdge(1, 4)
+test4.addEdge(2, 4)
+test4.addEdge(3, 4)
+
+test4.addCycle([0,1,3])
+test4.addCycle([1,3,4])
+test4.addCycle([1,2,4])
+
+test4.playGame(2)'''
+# Wheel 5
+'''test5 = GameofCycles(6)
+test5.addEdge(0, 1)
+test5.addEdge(0, 4)
+test5.addEdge(0, 5)
+test5.addEdge(1, 2)
+test5.addEdge(1, 5)
+test5.addEdge(2, 3)
+test5.addEdge(2, 5)
+test5.addEdge(3, 4)
+test5.addEdge(3, 5)
+test5.addEdge(4, 5)
+
+test5.addCycle([0,1,5])
+test5.addCycle([0,4,5])
+test5.addCycle([1,2,5])
+test5.addCycle([2,3,5])
+test5.addCycle([3,4,5])
+
+test5.simulateGame(2, True)'''
